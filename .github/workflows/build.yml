@@ -39,17 +39,13 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 22
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: 10
+          cache: "yarn"
 
       - name: Install dependencies
-        run: pnpm install
+        run: yarn install --immutable
 
       - name: Build macOS installer
-        run: pnpm dist:mac
+        run: yarn dist:mac
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v7
@@ -69,17 +65,13 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 22
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: 10
+          cache: "yarn"
 
       - name: Install dependencies
-        run: pnpm install
+        run: yarn install --immutable
 
       - name: Build Linux installer
-        run: pnpm dist:linux
+        run: yarn dist:linux
 
       - name: Upload AppImage
         uses: actions/upload-artifact@v7
@@ -105,17 +97,13 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 22
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: 10
+          cache: "yarn"
 
       - name: Install dependencies
-        run: pnpm install
+        run: yarn install --immutable
 
       - name: Build Windows installer
-        run: pnpm dist:win
+        run: yarn dist:win
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v7

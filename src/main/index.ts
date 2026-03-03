@@ -1,4 +1,4 @@
-import { app, BrowserWindow, shell } from "electron";
+import { app, BrowserWindow, dialog, shell } from "electron";
 import { join } from "path";
 import { electronApp, optimizer, is } from "@electron-toolkit/utils";
 import { registerIpcHandlers } from "./ipc";
@@ -9,6 +9,25 @@ import { initDb } from "./db";
 import { appLog } from "./utils/log";
 
 let startHidden = false;
+
+function handleFatalError(err: Error, context: string): void {
+  const message = err.message || String(err);
+  const stack = err.stack || "No stack trace";
+  const full = `${message}\n\n${stack}`;
+  appLog.error(`[${context}]`, full);
+  try {
+    dialog.showErrorBox("Unexpected Error", full);
+  } catch {
+    console.error(`[${context}]`, full);
+  }
+  process.exit(1);
+}
+
+process.on("uncaughtException", (err) => handleFatalError(err, "uncaughtException"));
+process.on("unhandledRejection", (reason, _promise) => {
+  const err = reason instanceof Error ? reason : new Error(String(reason));
+  handleFatalError(err, "unhandledRejection");
+});
 
 function createWindow(): BrowserWindow {
   const win = new BrowserWindow({

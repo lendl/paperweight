@@ -1,8 +1,7 @@
 /**
  * Build script: reads /companies/*.json and creates resources/companies.db
  *
- * Run manually before building the app:
- *   npx tsx scripts/build-companies-db.ts
+ * Run manually: yarn build:companies
  *
  * Uses better-sqlite3 (cross-platform, no system sqlite3 CLI needed).
  */

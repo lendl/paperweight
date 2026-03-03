@@ -1,8 +1,7 @@
 /**
  * Build script: fetches breaches from HIBP API and creates resources/breaches.db
  *
- * Run manually before building the app:
- *   npx tsx scripts/build-breaches-db.ts
+ * Run manually: yarn build:breaches
  *
  * Source: https://haveibeenpwned.com/api/v3/breaches
  *

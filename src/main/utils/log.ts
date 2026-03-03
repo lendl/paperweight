@@ -1,14 +1,37 @@
-import log from "electron-log/main";
+import { parentPort } from "node:worker_threads";
 import { readFileSync } from "fs";
 
-// File transport: info+ (error, warn, info all written)
-log.transports.file.level = "info";
-log.transports.file.maxSize = 5 * 1024 * 1024; // 5MB
+// Worker threads don't have access to 'electron' — electron-log requires it at load time.
+// Use a console-based fallback when running in a worker.
+function createWorkerLogger() {
+  const createScope = (name: string) => {
+    const prefix = `[${name}]`;
+    return {
+      debug: (...args: unknown[]) => console.log(prefix, ...args),
+      info: (...args: unknown[]) => console.info(prefix, ...args),
+      warn: (...args: unknown[]) => console.warn(prefix, ...args),
+      error: (...args: unknown[]) => console.error(prefix, ...args),
+      verbose: (...args: unknown[]) => console.log(prefix, ...args),
+    };
+  };
+  return {
+    scope: createScope,
+    transports: { file: { getFile: () => ({ path: "" }) } },
+  };
+}
 
-// Console transport: debug in dev, info in prod.
-// Use NODE_ENV (set by electron-vite) instead of app.isPackaged so this module
-// is safe to import from worker threads, where app is not available at load time.
-log.transports.console.level = process.env.NODE_ENV !== "production" ? "debug" : "info";
+let log: ReturnType<typeof createWorkerLogger> | import("electron-log").MainLogger;
+
+if (typeof parentPort !== "undefined") {
+  log = createWorkerLogger();
+} else {
+  const electronLog = require("electron-log/main").default;
+  electronLog.transports.file.level = "info";
+  electronLog.transports.file.maxSize = 5 * 1024 * 1024; // 5MB
+  electronLog.transports.console.level =
+    process.env.NODE_ENV !== "production" ? "debug" : "info";
+  log = electronLog;
+}
 
 // Scoped loggers
 export const appLog = log.scope("app");
