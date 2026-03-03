@@ -1,23 +1,22 @@
 /**
- * Build script: reads data/hibp/breaches.json and creates resources/breaches.db
+ * Build script: fetches breaches from HIBP API and creates resources/breaches.db
  *
  * Run manually before building the app:
  *   npx tsx scripts/build-breaches-db.ts
  *
  * Source: https://haveibeenpwned.com/api/v3/breaches
- * Re-fetch the JSON to update breach data before each release.
  *
  * Uses the sqlite3 CLI (no native Node modules needed).
  */
 
-import { readFileSync, mkdirSync, unlinkSync, existsSync } from "fs";
+import { mkdirSync, unlinkSync, existsSync } from "fs";
 import { join, resolve } from "path";
 import { execSync } from "child_process";
 import { fileURLToPath } from "url";
 
 const __dirname = join(fileURLToPath(import.meta.url), "..");
 const ROOT = resolve(__dirname, "..");
-const SOURCE_PATH = join(ROOT, "data", "hibp", "breaches.json");
+const HIBP_BREACHES_URL = "https://haveibeenpwned.com/api/v3/breaches";
 const OUT_PATH = join(ROOT, "resources", "breaches.db");
 
 interface HibpBreach {
@@ -39,14 +38,13 @@ function escSql(str: string | null | undefined): string {
   return "'" + String(str).replace(/'/g, "''") + "'";
 }
 
-function main() {
-  if (!existsSync(SOURCE_PATH)) {
-    console.error(`Source not found: ${SOURCE_PATH}`);
-    console.error("Fetch it with: curl https://haveibeenpwned.com/api/v3/breaches -o data/hibp/breaches.json");
+async function main() {
+  const res = await fetch(HIBP_BREACHES_URL);
+  if (!res.ok) {
+    console.error(`Failed to fetch breaches: ${res.status} ${res.statusText}`);
     process.exit(1);
   }
-
-  const breaches: HibpBreach[] = JSON.parse(readFileSync(SOURCE_PATH, "utf-8"));
+  const breaches: HibpBreach[] = await res.json();
   console.log(`Loaded ${breaches.length} breaches from HIBP`);
 
   mkdirSync(join(ROOT, "resources"), { recursive: true });
@@ -108,4 +106,7 @@ function main() {
   console.log(`With domain: ${withDomain}`);
 }
 
-main();
+main().catch((err) => {
+  console.error(err);
+  process.exit(1);
+});
