@@ -81,8 +81,6 @@ const api: ElectronAPI = {
   markMessageAsRead: (messageId, isRead) =>
     ipcRenderer.invoke(IPC.markMessageAsRead, messageId, isRead),
 
-  requestModifyAccess: () => ipcRenderer.invoke(IPC.requestModifyAccess),
-
   getEmailConnection: () => ipcRenderer.invoke(IPC.getEmailConnection),
 
   activateLicense: (key) => ipcRenderer.invoke(IPC.activateLicense, key),

@@ -159,6 +159,49 @@ function ProviderSelect({
   );
 }
 
+// ── Gmail Notice ─────────────────────────────────────────────────────────────
+
+function GmailNotice({
+  onContinue,
+  onBack,
+}: {
+  onContinue: () => void;
+  onBack: () => void;
+}): JSX.Element {
+  return (
+    <div className="space-y-6">
+      <div className="space-y-2">
+        <h3 className="text-lg font-semibold">Gmail is in beta</h3>
+        <p className="text-sm text-base-content/70 leading-relaxed">
+          Google connection requires manual activation during our testing phase.
+          Send us an email and we'll add you — usually within a few hours.
+        </p>
+      </div>
+
+      <a
+        href="mailto:hello@paperweight.email?subject=Test%20activation"
+        className="btn btn-outline btn-block"
+      >
+        <Mail className="w-4 h-4" aria-hidden="true" />
+        hello@paperweight.email
+      </a>
+
+      <p className="text-xs text-base-content/50">
+        Already activated? Continue to connect your account.
+      </p>
+
+      <div className="flex gap-3">
+        <button className="btn btn-primary flex-1" onClick={onContinue}>
+          Continue
+        </button>
+        <button className="btn btn-ghost flex-1" onClick={onBack}>
+          Back
+        </button>
+      </div>
+    </div>
+  );
+}
+
 // ── Gmail Connect ────────────────────────────────────────────────────────────
 
 function GmailConnect({
@@ -492,7 +535,7 @@ function ImapConnect({
 
 export default function Onboarding(): JSX.Element {
   const navigate = useNavigate();
-  const [view, setView] = useState<"select" | "gmail" | "microsoft" | "imap">("select");
+  const [view, setView] = useState<"select" | "gmail-notice" | "gmail" | "microsoft" | "imap">("select");
 
   const handleSuccess = (): void => {
     navigate("/dashboard");
@@ -512,9 +555,15 @@ export default function Onboarding(): JSX.Element {
 
           {view === "select" && (
             <ProviderSelect
-              onGmail={() => setView("gmail")}
+              onGmail={() => setView("gmail-notice")}
               onMicrosoft={() => setView("microsoft")}
               onImap={() => setView("imap")}
+            />
+          )}
+          {view === "gmail-notice" && (
+            <GmailNotice
+              onContinue={() => setView("gmail")}
+              onBack={() => setView("select")}
             />
           )}
           {view === "gmail" && (

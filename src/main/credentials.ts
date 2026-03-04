@@ -7,7 +7,6 @@ export interface StoredCredentials {
     accessToken: string;
     refreshToken: string;
     expiresAt: number;
-    grantedScopes?: string;
   };
   microsoft?: {
     accessToken: string;

@@ -9,7 +9,6 @@ import {
   getAccountInfo,
   getConnectionStatus,
   getEmailConnection,
-  requestModifyAccess,
   saveImapConfigAndRecordAccount,
   startGmailAuthAndRecordAccount,
   startMicrosoftAuthAndRecordAccount,
@@ -75,8 +74,6 @@ export function registerAccountHandlers(): void {
   ipcMain.handle(IPC.getAccountInfo, () => getAccountInfo());
 
   ipcMain.handle(IPC.getEmailConnection, () => getEmailConnection());
-
-  ipcMain.handle(IPC.requestModifyAccess, () => requestModifyAccess());
 
   // --- Email actions ---
 

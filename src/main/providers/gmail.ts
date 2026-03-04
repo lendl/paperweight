@@ -13,22 +13,14 @@ const GOOGLE_AUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth";
 const GOOGLE_TOKEN_URL = "https://oauth2.googleapis.com/token";
 const GMAIL_API_BASE = "https://gmail.googleapis.com/gmail/v1/users/me";
 
-const SCOPES_READONLY =
-  "https://www.googleapis.com/auth/gmail.readonly";
 const SCOPES_MODIFY =
   "https://www.googleapis.com/auth/gmail.modify";
 
-function hasModifyScope(grantedScopes?: string): boolean {
-  return !!grantedScopes?.includes("gmail.modify");
-}
-
 // --- OAuth ---
 
-export async function startLoopbackAuth(
-  requestModify = false
-): Promise<{ success: boolean; error?: string }> {
+export async function startLoopbackAuth(): Promise<{ success: boolean; error?: string }> {
   try {
-    const scopes = requestModify ? SCOPES_MODIFY : SCOPES_READONLY;
+    const scopes = SCOPES_MODIFY;
     const { code, redirectUri } = await runLoopbackAuth(
       "http://127.0.0.1",
       (redirectUri) => {
@@ -79,7 +71,6 @@ export async function startLoopbackAuth(
           accessToken: data.access_token,
           refreshToken: data.refresh_token || "",
           expiresAt: Date.now() + (data.expires_in || 3600) * 1000,
-          grantedScopes: data.scope || scopes,
         },
       });
       return { success: true };
@@ -326,7 +317,7 @@ export function createGmailProvider(): EmailProvider {
         type: "gmail-oauth",
         email: email || "",
         canRead: true,
-        canModify: hasModifyScope(creds?.gmail?.grantedScopes),
+        canModify: true,
         canSend: false,
       };
     },

@@ -12,8 +12,7 @@ const MS_AUTH_URL = "https://login.microsoftonline.com/common/oauth2/v2.0/author
 const MS_TOKEN_URL = "https://login.microsoftonline.com/common/oauth2/v2.0/token";
 const GRAPH_BASE = "https://graph.microsoft.com/v1.0/me";
 
-// All scopes requested upfront — no re-auth step needed (unlike Gmail readonly→modify).
-const SCOPES = "offline_access openid profile User.Read Mail.ReadWrite Mail.Send";
+const SCOPES = "offline_access openid profile User.Read Mail.ReadWrite";
 
 // --- PKCE helpers ---
 

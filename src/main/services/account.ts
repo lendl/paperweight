@@ -47,7 +47,7 @@ export function getConnectionStatus() {
 
 export async function startGmailAuthAndRecordAccount() {
   authLog.info("Gmail auth started");
-  const result = await startLoopbackAuth(true);
+  const result = await startLoopbackAuth();
   if (!result.success) {
     authLog.error("Gmail auth failed:", result.error);
     return result;
@@ -214,22 +214,6 @@ export async function getEmailConnection(): Promise<EmailConnection | null> {
   } catch {
     return null;
   }
-}
-
-export async function requestModifyAccess() {
-  authLog.warn("Modify access requested");
-  const creds = loadCredentials();
-  if (!creds) return { success: false, error: "No credentials stored" };
-
-  if (creds.providerType === "imap" || creds.providerType === "microsoft") {
-    return { success: true };
-  }
-
-  if (creds.providerType === "gmail") {
-    return startLoopbackAuth(true);
-  }
-
-  return { success: false, error: "Unknown provider" };
 }
 
 export async function trashMessage(messageId: string) {

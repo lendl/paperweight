@@ -131,10 +131,6 @@ export default function Settings(): JSX.Element {
   };
 
   const connectionHealthy = connection ? connection.canRead : false;
-  const showPermissionsWarning =
-    account?.providerType === "gmail" &&
-    connectionHealthy &&
-    connection?.canModify === false;
 
   const handleReconnect = async (): Promise<void> => {
     setReconnectLoading(true);
@@ -143,7 +139,7 @@ export default function Settings(): JSX.Element {
       if (account?.providerType === "microsoft") {
         result = await window.api.startMicrosoftAuth();
       } else {
-        result = await window.api.requestModifyAccess();
+        result = await window.api.startGmailAuth();
       }
       if (result.success) {
         const conn = await window.api.getEmailConnection();
@@ -307,18 +303,6 @@ export default function Settings(): JSX.Element {
                     className={`w-2 h-2 rounded-full ${connectionHealthy ? "bg-success" : "bg-error"}`}
                   />
                 </span>
-
-                {showPermissionsWarning && (
-                  <>
-                    <span className="text-base-content/50">Permissions</span>
-                    <span
-                      className="tooltip tooltip-right w-fit text-warning cursor-default"
-                      data-tip="Move to trash and reporting spam are unavailable."
-                    >
-                      Read-only
-                    </span>
-                  </>
-                )}
 
                 <span className="text-base-content/50">Last sync</span>
                 <span>{formatDateTime(account.lastSyncAt)}</span>
