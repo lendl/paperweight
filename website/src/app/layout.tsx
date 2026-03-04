@@ -4,6 +4,7 @@ import { Providers } from "@/context";
 import { SITE_CONFIG } from "@/utils/config";
 import "@/assets/globals.css";
 import Link from "next/link";
+import { Newsletter } from "@/components/Newsletter";
 
 export const metadata: Metadata = {
   applicationName: SITE_CONFIG.NAME,
@@ -42,8 +43,8 @@ export default function RootLayout(props: PropsWithChildren) {
         <Providers>
           <div className="min-h-screen flex flex-col">
             {/* Header */}
-            <header className="border-b">
-              <div className="container mx-auto px-4 py-4">
+            <header>
+              <div className="container mx-auto px-4 py-6">
                 <nav className="flex items-center justify-between">
                   <Link
                     href="/"
@@ -52,7 +53,6 @@ export default function RootLayout(props: PropsWithChildren) {
                     <span>🗿</span>
                     <span>Paperweight</span>
                   </Link>
-
                   <div className="flex items-center gap-6">
                     <Link
                       href={SITE_CONFIG.GITHUB_URL}
@@ -74,38 +74,52 @@ export default function RootLayout(props: PropsWithChildren) {
             <main className="flex-1">{props.children}</main>
 
             {/* Footer */}
-            <footer className="border-t mt-20">
-              <div className="container mx-auto px-4 py-8">
-                <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm">
-                  <div className="flex items-center gap-2">
-                    <span>Built by a silicon intern</span>
-                    <span>·</span>
-                    <span>Approved by</span>
-                    <a
-                      href="https://x.com/wslyvh"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="link link-primary"
-                    >
-                      wslyvh
-                    </a>
-                  </div>
+            <footer className="bg-base-100">
+              <div className="container mx-auto px-4">
+                {/* Newsletter */}
+                <div className="max-w-md mx-auto text-center py-16">
+                  <h2 className="text-2xl font-bold mb-4">Get updates</h2>
+                  <p className="mb-6 opacity-80">
+                    Sign up for launch announcements and feature updates.
+                  </p>
+                  <Newsletter />
+                </div>
 
-                  <div className="flex items-center gap-4">
-                    <Link href="/privacy" className="hover:underline">
-                      Privacy
-                    </Link>
-                    <Link href="/terms" className="hover:underline">
-                      Terms
-                    </Link>
-                    <Link
-                      href={SITE_CONFIG.GITHUB_URL}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="hover:underline"
-                    >
-                      Open source
-                    </Link>
+                {/* Divider */}
+                <div className="border-t border-base-300"></div>
+
+                {/* Footer Links */}
+                <div className="py-8">
+                  <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm">
+                    <div className="flex items-center gap-2">
+                      <span>Built by a silicon intern</span>
+                      <span>·</span>
+                      <span>Approved by</span>
+                      <a
+                        href="https://x.com/wslyvh"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="link link-primary"
+                      >
+                        wslyvh
+                      </a>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <Link href="/privacy" className="hover:underline">
+                        Privacy
+                      </Link>
+                      <Link href="/terms" className="hover:underline">
+                        Terms
+                      </Link>
+                      <Link
+                        href={SITE_CONFIG.GITHUB_URL}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="hover:underline"
+                      >
+                        Open source
+                      </Link>
+                    </div>
                   </div>
                 </div>
               </div>
