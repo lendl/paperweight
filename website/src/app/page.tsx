@@ -84,25 +84,39 @@ export default function Home() {
           <h2 className="text-3xl font-bold mb-8">
             Download {SITE_CONFIG.NAME}
           </h2>
-          <div className="grid md:grid-cols-3 gap-4 mb-8">
-            <Link
-              href={`${SITE_CONFIG.GITHUB_URL}/releases`}
-              className="btn btn-outline btn-lg plausible-event-name=Download+macOS"
-            >
-              macOS
-            </Link>
-            <Link
-              href={`${SITE_CONFIG.GITHUB_URL}/releases`}
-              className="btn btn-outline btn-lg plausible-event-name=Download+Windows"
-            >
-              Windows
-            </Link>
-            <Link
-              href={`${SITE_CONFIG.GITHUB_URL}/releases`}
-              className="btn btn-outline btn-lg plausible-event-name=Download+Linux"
-            >
-              Linux
-            </Link>
+          <div className="flex flex-row justify-center gap-4 mb-8">
+            <div>
+              <Link
+                href={`${SITE_CONFIG.GITHUB_URL}/releases/download/v0.1.0/Paperweight-0.1.0.dmg`}
+                className="btn btn-outline btn-lg w-48 plausible-event-name=Download+macOS"
+              >
+                macOS
+              </Link>
+            </div>
+            <div>
+              <Link
+                href={`${SITE_CONFIG.GITHUB_URL}/releases/download/v0.1.0/Paperweight-0.1.0.exe`}
+                className="btn btn-outline btn-lg w-48 plausible-event-name=Download+Windows"
+              >
+                Windows
+              </Link>
+            </div>
+            <div>
+              <Link
+                href={`${SITE_CONFIG.GITHUB_URL}/releases/download/v0.1.0/Paperweight-0.1.0.AppImage`}
+                className="btn btn-outline btn-lg w-48 plausible-event-name=Download+Linux"
+              >
+                Linux
+              </Link>
+              <br />
+
+              <Link
+                href={`${SITE_CONFIG.GITHUB_URL}/releases/download/v0.1.0/Paperweight-0.1.0.deb`}
+                className="link text-sm"
+              >
+                or <span className="font-bold">.deb</span> package
+              </Link>
+            </div>
           </div>
           <p className="text-sm opacity-60">
             Free to scan 30 days of email.{" "}
