@@ -238,7 +238,7 @@ function extractPartByMime(parts: MimePart[], mime: string): string {
 
 interface GmailHistoryEntry {
   id: string;
-  messagesAdded?: Array<{ message: { id: string } }>;
+  messagesAdded?: Array<{ message: { id: string; labelIds?: string[] } }>;
   messagesDeleted?: Array<{ message: { id: string } }>;
 }
 
@@ -484,6 +484,8 @@ export function createGmailProvider(): EmailProvider {
 
           for (const entry of result.history ?? []) {
             for (const item of entry.messagesAdded ?? []) {
+              const labels = item.message.labelIds ?? [];
+              if (labels.includes("SPAM") || labels.includes("TRASH")) continue;
               addedIds.add(item.message.id);
               deletedIds.delete(item.message.id);
             }

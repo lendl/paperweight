@@ -289,7 +289,7 @@ export function createMicrosoftProvider(): EmailProvider {
 
     async getMessageCount(since: Date, until?: Date): Promise<number | undefined> {
       try {
-        const filterParts = [`receivedDateTime ge ${since.toISOString()}`];
+        const filterParts = [`receivedDateTime ge ${since.toISOString()}`, `isJunk ne true`];
         if (until) filterParts.push(`receivedDateTime lt ${until.toISOString()}`);
 
         const url = new URL(`${GRAPH_BASE}/messages`);
@@ -321,7 +321,7 @@ export function createMicrosoftProvider(): EmailProvider {
       if (pageToken) {
         listUrl = pageToken;
       } else {
-        const filterParts = [`receivedDateTime ge ${since.toISOString()}`];
+        const filterParts = [`receivedDateTime ge ${since.toISOString()}`, `isJunk ne true`];
         if (until) filterParts.push(`receivedDateTime lt ${until.toISOString()}`);
 
         const url = new URL(`${GRAPH_BASE}/messages`);
@@ -406,7 +406,7 @@ export function createMicrosoftProvider(): EmailProvider {
         // no need to paginate through the entire mailbox.
         const url = new URL(`${GRAPH_BASE}/messages/delta`);
         url.searchParams.set("$deltaToken", "latest");
-        url.searchParams.set("$select", "id");
+        url.searchParams.set("$select", "id,isJunk");
 
         const result = (await graphGet(url.toString())) as {
           "@odata.deltaLink"?: string;
@@ -430,7 +430,7 @@ export function createMicrosoftProvider(): EmailProvider {
 
         while (nextLink) {
           const result = (await graphGet(nextLink)) as {
-            value?: Array<{ id: string; "@removed"?: unknown }>;
+            value?: Array<{ id: string; "@removed"?: unknown; isJunk?: boolean }>;
             "@odata.nextLink"?: string;
             "@odata.deltaLink"?: string;
           };
@@ -438,7 +438,7 @@ export function createMicrosoftProvider(): EmailProvider {
           for (const item of result.value ?? []) {
             if (item["@removed"]) {
               deletedIds.push(item.id);
-            } else {
+            } else if (!item.isJunk) {
               addedIds.push(item.id);
             }
           }
