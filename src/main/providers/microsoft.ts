@@ -289,10 +289,10 @@ export function createMicrosoftProvider(): EmailProvider {
 
     async getMessageCount(since: Date, until?: Date): Promise<number | undefined> {
       try {
-        const filterParts = [`receivedDateTime ge ${since.toISOString()}`, `isJunk ne true`];
+        const filterParts = [`receivedDateTime ge ${since.toISOString()}`];
         if (until) filterParts.push(`receivedDateTime lt ${until.toISOString()}`);
 
-        const url = new URL(`${GRAPH_BASE}/messages`);
+        const url = new URL(`${GRAPH_BASE}/mailFolders/inbox/messages`);
         url.searchParams.set("$count", "true");
         url.searchParams.set("$filter", filterParts.join(" and "));
         url.searchParams.set("$top", "1");
@@ -321,10 +321,10 @@ export function createMicrosoftProvider(): EmailProvider {
       if (pageToken) {
         listUrl = pageToken;
       } else {
-        const filterParts = [`receivedDateTime ge ${since.toISOString()}`, `isJunk ne true`];
+        const filterParts = [`receivedDateTime ge ${since.toISOString()}`];
         if (until) filterParts.push(`receivedDateTime lt ${until.toISOString()}`);
 
-        const url = new URL(`${GRAPH_BASE}/messages`);
+        const url = new URL(`${GRAPH_BASE}/mailFolders/inbox/messages`);
         url.searchParams.set("$select", "id,receivedDateTime,from,subject,bodyPreview");
         url.searchParams.set("$top", "50");
         url.searchParams.set("$filter", filterParts.join(" and "));
@@ -404,9 +404,9 @@ export function createMicrosoftProvider(): EmailProvider {
       try {
         // $deltaToken=latest returns an empty page with just the deltaLink immediately —
         // no need to paginate through the entire mailbox.
-        const url = new URL(`${GRAPH_BASE}/messages/delta`);
+        const url = new URL(`${GRAPH_BASE}/mailFolders/inbox/messages/delta`);
         url.searchParams.set("$deltaToken", "latest");
-        url.searchParams.set("$select", "id,isJunk");
+        url.searchParams.set("$select", "id");
 
         const result = (await graphGet(url.toString())) as {
           "@odata.deltaLink"?: string;
@@ -430,7 +430,7 @@ export function createMicrosoftProvider(): EmailProvider {
 
         while (nextLink) {
           const result = (await graphGet(nextLink)) as {
-            value?: Array<{ id: string; "@removed"?: unknown; isJunk?: boolean }>;
+            value?: Array<{ id: string; "@removed"?: unknown }>;
             "@odata.nextLink"?: string;
             "@odata.deltaLink"?: string;
           };
@@ -438,7 +438,7 @@ export function createMicrosoftProvider(): EmailProvider {
           for (const item of result.value ?? []) {
             if (item["@removed"]) {
               deletedIds.push(item.id);
-            } else if (!item.isJunk) {
+            } else {
               addedIds.push(item.id);
             }
           }
