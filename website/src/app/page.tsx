@@ -3,6 +3,8 @@ import { Newsletter } from "@/components/Newsletter";
 import { SITE_CONFIG } from "@/utils/config";
 import { Mail, ShieldAlert, Map, FileText, Lock, Github } from "lucide-react";
 
+const latestVersion = "0.1.1";
+
 export default function Home() {
   return (
     <>
@@ -143,14 +145,14 @@ export default function Home() {
 
           <div className="flex flex-col sm:flex-row flex-wrap justify-center gap-4 mb-4">
             <Link
-              href={`${SITE_CONFIG.GITHUB_URL}/releases/latest/download/Paperweight-0.1.0.dmg`}
+              href={`${SITE_CONFIG.GITHUB_URL}/releases/download/v${latestVersion}/Paperweight-${latestVersion}.dmg`}
               className="btn btn-outline btn-lg w-full sm:flex-1 sm:min-w-[8rem] sm:max-w-48 plausible-event-name=Download+macOS"
             >
               macOS
             </Link>
 
             <Link
-              href={`${SITE_CONFIG.GITHUB_URL}/releases/latest/download/Paperweight-0.1.0.exe`}
+              href={`${SITE_CONFIG.GITHUB_URL}/releases/download/v${latestVersion}/Paperweight-${latestVersion}.exe`}
               className="btn btn-outline btn-lg w-full sm:flex-1 sm:min-w-[8rem] sm:max-w-48 plausible-event-name=Download+Windows"
             >
               Windows
@@ -158,15 +160,15 @@ export default function Home() {
 
             <div className="w-full sm:flex-1 sm:min-w-[8rem] sm:max-w-48">
               <Link
-                href={`${SITE_CONFIG.GITHUB_URL}/releases/latest/download/Paperweight-0.1.0.AppImage`}
+                href={`${SITE_CONFIG.GITHUB_URL}/releases/download/v${latestVersion}/Paperweight-${latestVersion}.AppImage`}
                 className="btn btn-outline btn-lg w-full plausible-event-name=Download+Linux"
               >
                 Linux
               </Link>
               <br />
               <Link
-                href={`${SITE_CONFIG.GITHUB_URL}/releases/latest/download/Paperweight-0.1.0.deb`}
-                className="link text-sm"
+                href={`${SITE_CONFIG.GITHUB_URL}/releases/download/v${latestVersion}/Paperweight-${latestVersion}.deb`}
+                className="link text-sm plausible-event-name=Download+Linux+deb"
               >
                 or <span className="font-bold">.deb</span> package
               </Link>
@@ -194,7 +196,7 @@ export default function Home() {
           </div>
 
           <p className="text-sm opacity-60">
-            Latest version: v0.1.0 ·{" "}
+            Latest version: v{latestVersion} ·{" "}
             <a href={`${SITE_CONFIG.GITHUB_URL}/releases`} className="link">
               All releases
             </a>
