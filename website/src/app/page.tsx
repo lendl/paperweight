@@ -1,9 +1,8 @@
 import Link from "next/link";
-import { Newsletter } from "@/components/Newsletter";
 import { SITE_CONFIG } from "@/utils/config";
 import { Mail, ShieldAlert, Map, FileText, Lock, Github } from "lucide-react";
 
-const latestVersion = "0.1.1";
+const latestVersion = "0.1.2";
 
 export default function Home() {
   return (
