@@ -1,4 +1,4 @@
-import { app, BrowserWindow, dialog, shell } from "electron";
+import { app, BrowserWindow, dialog, shell, Menu } from "electron";
 import { join } from "path";
 import { electronApp, optimizer, is } from "@electron-toolkit/utils";
 import { registerIpcHandlers } from "./ipc";
@@ -66,6 +66,7 @@ function createWindow(): BrowserWindow {
 }
 
 app.whenReady().then(() => {
+  Menu.setApplicationMenu(null);
   initFileLog(join(app.getPath("logs"), "main.log"));
 
   appLog.info(`Starting ${APP_CONFIG.NAME} v${app.getVersion()} (Electron ${process.versions.electron})`);
