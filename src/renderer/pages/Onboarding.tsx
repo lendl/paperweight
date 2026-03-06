@@ -1,6 +1,9 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { CheckCircle2, Mail } from "lucide-react";
+import { CheckCircle2, Mail, HelpCircle } from "lucide-react";
+import type { SupportInfo } from "@shared/types";
+import DeviceInfoCard from "../components/DeviceInfoCard";
+import HelpSection from "../components/HelpSection";
 
 // ── Icons ────────────────────────────────────────────────────────────────────
 
@@ -169,26 +172,35 @@ function GmailNotice({
   onBack: () => void;
 }): JSX.Element {
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <div className="space-y-2">
-        <h3 className="text-lg font-semibold">Gmail is in beta</h3>
+        <h3 className="text-lg font-semibold">Google verification pending</h3>
         <p className="text-sm text-base-content/70 leading-relaxed">
-          Google connection requires manual activation during our testing phase.
-          Send us an email and we'll add you — usually within a few hours.
+          Paperweight is awaiting Google's verification process. You'll see a
+          warning screen — click{" "}
+          <span className="font-medium text-base-content">Advanced</span> then{" "}
+          <span className="font-medium text-base-content">
+            Go to Paperweight (unsafe)
+          </span>{" "}
+          to continue.
         </p>
       </div>
 
-      <a
-        href="mailto:hello@paperweight.email?subject=Test%20activation"
-        className="btn btn-outline btn-block"
-      >
-        <Mail className="w-4 h-4" aria-hidden="true" />
-        hello@paperweight.email
-      </a>
-
-      <p className="text-xs text-base-content/50">
-        Already activated? Continue to connect your account.
-      </p>
+      <div className="alert text-xs">
+        <span>
+          Paperweight is{" "}
+          <a
+            href="https://github.com/wslyvh/paperweight"
+            className="link"
+            target="_blank"
+            rel="noreferrer"
+          >
+            open source
+          </a>
+          . You can review exactly what the app does with your account before
+          connecting.
+        </span>
+      </div>
 
       <div className="flex gap-3">
         <button className="btn btn-primary flex-1" onClick={onContinue}>
@@ -535,7 +547,17 @@ function ImapConnect({
 
 export default function Onboarding(): JSX.Element {
   const navigate = useNavigate();
-  const [view, setView] = useState<"select" | "gmail-notice" | "gmail" | "microsoft" | "imap">("select");
+  const [view, setView] = useState<
+    "select" | "gmail-notice" | "gmail" | "microsoft" | "imap"
+  >("select");
+  const [showHelpModal, setShowHelpModal] = useState(false);
+  const [supportInfo, setSupportInfo] = useState<SupportInfo>();
+
+  useEffect(() => {
+    if (showHelpModal) {
+      window.api.getSupportInfo().then(setSupportInfo);
+    }
+  }, [showHelpModal]);
 
   const handleSuccess = (): void => {
     navigate("/dashboard");
@@ -546,11 +568,21 @@ export default function Onboarding(): JSX.Element {
       {/* Left panel */}
       <div className="flex-1 flex flex-col justify-center items-center p-8 overflow-y-auto">
         <div className="w-full max-w-sm">
-          <div className="mb-8">
-            <h2 className="text-2xl font-bold">Get Started</h2>
-            <p className="text-base-content/60 text-sm mt-1">
-              Connect your email account
-            </p>
+          <div className="mb-8 flex items-start justify-between gap-4">
+            <div>
+              <h2 className="text-2xl font-bold">Get Started</h2>
+              <p className="text-base-content/60 text-sm mt-1">
+                Connect your email account
+              </p>
+            </div>
+            <button
+              className="btn btn-ghost btn-sm btn-square shrink-0"
+              onClick={() => setShowHelpModal(true)}
+              title="Help & device info"
+              aria-label="Help & device info"
+            >
+              <HelpCircle className="w-4 h-4" />
+            </button>
           </div>
 
           {view === "select" && (
@@ -586,6 +618,30 @@ export default function Onboarding(): JSX.Element {
           )}
         </div>
       </div>
+
+      {/* Help modal */}
+      {showHelpModal && (
+        <dialog className="modal modal-open">
+          <div className="modal-box max-w-md">
+            <h3 className="font-bold text-lg">Help</h3>
+            <div className="space-y-6 py-4">
+              <DeviceInfoCard info={supportInfo} variant="plain" />
+              <HelpSection variant="plain" />
+            </div>
+            <div className="modal-action">
+              <button
+                className="btn btn-primary"
+                onClick={() => setShowHelpModal(false)}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+          <form method="dialog" className="modal-backdrop">
+            <button onClick={() => setShowHelpModal(false)}>close</button>
+          </form>
+        </dialog>
+      )}
 
       {/* Right panel */}
       <div className="flex-1 bg-primary text-primary-content flex items-center justify-center p-12">

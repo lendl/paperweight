@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import makeBlockie from "ethereum-blockies-base64";
-import { LifeBuoy } from "lucide-react";
+import { HelpCircle } from "lucide-react";
 import type {
   AccountInfo,
   EmailConnection,
@@ -161,7 +161,7 @@ export default function Settings(): JSX.Element {
           onClick={() => navigate("/support")}
           title="Support"
         >
-          <LifeBuoy className="w-4 h-4" />
+          <HelpCircle className="w-4 h-4" />
         </button>
       </div>
 

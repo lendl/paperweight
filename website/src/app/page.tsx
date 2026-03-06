@@ -1,6 +1,14 @@
 import Link from "next/link";
 import { SITE_CONFIG } from "@/utils/config";
-import { Mail, ShieldAlert, Map, FileText, Lock, Github } from "lucide-react";
+import {
+  Mail,
+  ShieldAlert,
+  Map,
+  FileText,
+  Lock,
+  Github,
+  Info,
+} from "lucide-react";
 
 const latestVersion = "0.1.3";
 
@@ -144,17 +152,16 @@ export default function Home() {
 
           <div className="flex flex-col sm:flex-row flex-wrap justify-center gap-4 mb-4">
             <Link
-              href={`${SITE_CONFIG.GITHUB_URL}/releases/download/v${latestVersion}/Paperweight-${latestVersion}.dmg`}
-              className="btn btn-outline btn-lg w-full sm:flex-1 sm:min-w-[8rem] sm:max-w-48 plausible-event-name=Download+macOS"
-            >
-              macOS
-            </Link>
-
-            <Link
               href={`${SITE_CONFIG.GITHUB_URL}/releases/download/v${latestVersion}/Paperweight-${latestVersion}.exe`}
               className="btn btn-outline btn-lg w-full sm:flex-1 sm:min-w-[8rem] sm:max-w-48 plausible-event-name=Download+Windows"
             >
               Windows
+            </Link>
+            <Link
+              href={`${SITE_CONFIG.GITHUB_URL}/releases/download/v${latestVersion}/Paperweight-${latestVersion}.dmg`}
+              className="btn btn-outline btn-lg w-full sm:flex-1 sm:min-w-[8rem] sm:max-w-48 plausible-event-name=Download+macOS"
+            >
+              macOS
             </Link>
 
             <div className="w-full sm:flex-1 sm:min-w-[8rem] sm:max-w-48">
@@ -175,23 +182,53 @@ export default function Home() {
           </div>
 
           {/* Installation notes */}
-          <div className="bg-base-200 rounded-lg p-4 mb-6 text-sm text-left max-w-xl mx-auto">
-            <p className="font-semibold mb-2">Installation notes:</p>
-            <ul className="space-y-1 opacity-80">
-              <li>
-                <strong>macOS:</strong> Right-click → Open (security bypass)
-              </li>
-              <li>
-                <strong>Windows:</strong> Run installer, may show SmartScreen
-                warning
-              </li>
-              <li>
-                <strong>Linux:</strong> Make AppImage executable:{" "}
-                <code className="bg-base-300 px-1 rounded">
-                  chmod +x Paperweight*.AppImage
-                </code>
-              </li>
-            </ul>
+          <div className="collapse collapse-arrow bg-base-200 rounded-lg border border-base-300 my-8 text-left max-w-xl mx-auto">
+            <input type="checkbox" />
+            <div className="collapse-title min-h-0 py-4 pr-12">
+              <h3 className="text-lg font-bold mb-2 flex items-center gap-2">
+                <Info className="w-5 h-5 shrink-0" strokeWidth={2} />
+                Installation notes
+              </h3>
+              <p className="text-sm opacity-80">
+                The app is not code-signed or verified by a trusted certificate
+                authority. Your system may block or warn about it. Expand for
+                platform steps.
+              </p>
+            </div>
+            <div className="collapse-content">
+              <ul className="space-y-3 text-sm opacity-80 pt-2">
+                <li>
+                  <strong>Windows</strong> - Run the installer. Windows
+                  SmartScreen may show a warning because the app is unsigned.
+                  Click &quot;More info&quot; and then &quot;Run anyway&quot; to
+                  proceed.
+                </li>
+                <li>
+                  <strong>macOS</strong> - Go to System Settings → Privacy &
+                  Security, scroll to the Security section, and click &quot;Open
+                  Anyway&quot; next to the blocked app. You may need to enter
+                  your admin password. Alternatively, hold Control, click the
+                  app, and select Open (security bypass).
+                </li>
+                <li>
+                  <strong>Linux AppImage</strong> - Right-click the file →
+                  Properties → Permissions → check &quot;Allow executing file as
+                  program&quot;, or run{" "}
+                  <code className="bg-base-300 px-1 rounded">
+                    chmod +x Paperweight*.AppImage
+                  </code>
+                  .{" "}
+                </li>
+                <li>
+                  <strong>Linux deb</strong> - Double-click the file to install,
+                  or run{" "}
+                  <code className="bg-base-300 px-1 rounded">
+                    sudo dpkg -i Paperweight*.deb
+                  </code>
+                  .
+                </li>
+              </ul>
+            </div>
           </div>
 
           <p className="text-sm opacity-60">
