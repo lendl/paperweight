@@ -8,7 +8,12 @@ import {
   matchVendorCompanies,
   categorizeVendors,
 } from "./vendors";
-import { insertMessageVendor, classifyMessageType, deleteMessagesByIds, getVendorIdsByMessageIds } from "./messages";
+import {
+  insertMessageVendor,
+  classifyMessageType,
+  deleteMessagesByIds,
+  getVendorIdsByMessageIds,
+} from "./messages";
 import { getSetting, hasValidLicense, getLicenseStatus } from "./settings";
 import { loadCredentials } from "../credentials";
 import { getProvider } from "../providers/ProviderFactory";
@@ -37,7 +42,11 @@ export function friendlyConnectionError(err: unknown): string {
   if (/authenticate|login|credentials|invalid/i.test(msg)) {
     return "Authentication failed. Check your username and password.";
   }
-  if (/Failed to refresh access token|invalid_grant|token.*expired|token.*revoked/i.test(msg)) {
+  if (
+    /Failed to refresh access token|invalid_grant|token.*expired|token.*revoked/i.test(
+      msg,
+    )
+  ) {
     return "Authorization expired. Reconnect your account to continue syncing.";
   }
 
@@ -54,8 +63,8 @@ const HISTORICAL_SYNC_DAYS = process.env.HISTORICAL_SYNC_DAYS
 
 const HISTORICAL_CHUNK_DAYS = 90;
 
-// Production floor: don't walk further back than this (covers Gmail launch + early IMAP).
-const HISTORICAL_FLOOR_DATE = new Date("2000-01-01");
+// Production floor: covers all consumer email back to Hotmail/early IMAP era.
+const HISTORICAL_FLOOR_DATE = new Date("1995-01-01");
 
 // --- Sync state ---
 
@@ -81,7 +90,7 @@ export function getSyncState() {
   const d = getDb();
   const row = d
     .prepare(
-      "SELECT last_sync_at, next_page_token, quick_sync_done_at, historical_cursor, historical_done, sync_checkpoint FROM sync_state WHERE id = 1"
+      "SELECT last_sync_at, next_page_token, quick_sync_done_at, historical_cursor, historical_done, sync_checkpoint FROM sync_state WHERE id = 1",
     )
     .get() as SyncStateRow;
 
@@ -99,7 +108,7 @@ export function updateSyncState(update: SyncStateUpdate): void {
   const d = getDb();
   // Build SET clause from only the provided keys (named params)
   const keys = Object.keys(update).filter(
-    (k) => (update as Record<string, unknown>)[k] !== undefined
+    (k) => (update as Record<string, unknown>)[k] !== undefined,
   );
   if (keys.length === 0) return;
   const setClause = keys.map((k) => `${k} = @${k}`).join(", ");
@@ -131,7 +140,8 @@ export function processMessagesBatch(messages: EmailMessage[]): void {
   const vendorIds = new Set<number>();
 
   for (const msg of messages) {
-    if (accountEmail && msg.senderEmail.toLowerCase() === accountEmail) continue;
+    if (accountEmail && msg.senderEmail.toLowerCase() === accountEmail)
+      continue;
 
     const domain = msg.senderEmail.split("@")[1];
     if (!domain) continue;
@@ -188,7 +198,10 @@ function emitProgress(partial: Omit<SyncStatus, "lastSyncAt">) {
 // Uses provider-native change tracking (Gmail History API, future IMAP UID/CONDSTORE).
 // Returns true on success, false when checkpoint expired (caller falls back to date-based).
 
-async function runCheckpointSync(provider: EmailProvider, checkpoint: string): Promise<boolean> {
+async function runCheckpointSync(
+  provider: EmailProvider,
+  checkpoint: string,
+): Promise<boolean> {
   emitProgress({
     running: true,
     progress: 0,
@@ -202,7 +215,9 @@ async function runCheckpointSync(provider: EmailProvider, checkpoint: string): P
 
   const changed = result.addedIds.length + result.deletedIds.length;
   if (changed > 0) {
-    syncLog.info(`Checkpoint sync: ${result.addedIds.length} added, ${result.deletedIds.length} deleted`);
+    syncLog.info(
+      `Checkpoint sync: ${result.addedIds.length} added, ${result.deletedIds.length} deleted`,
+    );
   }
 
   // Fetch and process new messages
@@ -246,7 +261,10 @@ async function runCheckpointSync(provider: EmailProvider, checkpoint: string): P
   }
 
   const now = Date.now();
-  updateSyncState({ last_sync_at: now, sync_checkpoint: result.nextCheckpoint });
+  updateSyncState({
+    last_sync_at: now,
+    sync_checkpoint: result.nextCheckpoint,
+  });
   currentStatus.lastSyncAt = now;
 
   return true;
@@ -256,14 +274,19 @@ async function runCheckpointSync(provider: EmailProvider, checkpoint: string): P
 // First run: fetches last FREE_TIER_SYNC_DAYS (free) or LICENSED_SYNC_DAYS (licensed) days.
 // Subsequent runs: uses checkpoint (History API) if available, else date-based since last_sync_at.
 
-async function runIncrementalSync(provider: EmailProvider, licensed: boolean): Promise<void> {
+async function runIncrementalSync(
+  provider: EmailProvider,
+  licensed: boolean,
+): Promise<void> {
   const syncState = getSyncState();
 
   // Fast path: checkpoint-based sync (Gmail History API)
   if (provider.listChanges && syncState.sync_checkpoint) {
     const used = await runCheckpointSync(provider, syncState.sync_checkpoint);
     if (used) return;
-    syncLog.info("Sync checkpoint expired, falling back to date-based incremental");
+    syncLog.info(
+      "Sync checkpoint expired, falling back to date-based incremental",
+    );
   }
 
   const isFirstRun = !syncState.quick_sync_done_at;
@@ -276,7 +299,7 @@ async function runIncrementalSync(provider: EmailProvider, licensed: boolean): P
     : new Date(Date.now() - syncDays * 86_400_000);
 
   syncLog.info(
-    `Incremental sync: since ${since.toISOString()} (${isFirstRun ? "first run" : "incremental"})`
+    `Incremental sync: since ${since.toISOString()} (${isFirstRun ? "first run" : "incremental"})`,
   );
 
   let pageToken = syncState.next_page_token;
@@ -298,17 +321,24 @@ async function runIncrementalSync(provider: EmailProvider, licensed: boolean): P
     pageNum++;
     syncLog.info(`Incremental page ${pageNum}: fetching...`);
 
-    const result = await provider.listMessages(since, undefined, pageToken, (fetched) => {
-      emitProgress({
-        running: true,
-        progress: totalFetched + fetched,
-        total: Math.max(providerEstimate, totalFetched + fetched),
-        message: "Fetching messages...",
-        phase: "incremental",
-      });
-    });
+    const result = await provider.listMessages(
+      since,
+      undefined,
+      pageToken,
+      (fetched) => {
+        emitProgress({
+          running: true,
+          progress: totalFetched + fetched,
+          total: Math.max(providerEstimate, totalFetched + fetched),
+          message: "Fetching messages...",
+          phase: "incremental",
+        });
+      },
+    );
 
-    syncLog.info(`Incremental page ${pageNum}: ${result.messages.length} messages`);
+    syncLog.info(
+      `Incremental page ${pageNum}: ${result.messages.length} messages`,
+    );
 
     if (result.messages.length > 0) {
       processMessagesBatch(result.messages);
@@ -348,7 +378,9 @@ async function runIncrementalSync(provider: EmailProvider, licensed: boolean): P
     // Set historical cursor to the since date — historical sync walks backward from here
     stateUpdate.quick_sync_done_at = now;
     stateUpdate.historical_cursor = since.getTime();
-    syncLog.info(`First incremental complete. Historical cursor initialised to ${since.toISOString()}`);
+    syncLog.info(
+      `First incremental complete. Historical cursor initialised to ${since.toISOString()}`,
+    );
   }
 
   // Capture sync checkpoint for next incremental (e.g. Gmail historyId)
@@ -363,18 +395,23 @@ async function runIncrementalSync(provider: EmailProvider, licensed: boolean): P
   updateSyncState(stateUpdate);
   currentStatus.lastSyncAt = now;
 
-  syncLog.info(`Incremental sync complete: ${totalFetched} messages, ${pageNum} pages`);
+  syncLog.info(
+    `Incremental sync complete: ${totalFetched} messages, ${pageNum} pages`,
+  );
 }
 
 // --- Historical sync ---
 // Walks backward in HISTORICAL_CHUNK_DAYS chunks from historical_cursor.
 // Returns { hasMore, count } — count is messages processed in this chunk.
 
-async function runHistoricalChunk(provider: EmailProvider): Promise<{ hasMore: boolean; count: number }> {
+async function runHistoricalChunk(
+  provider: EmailProvider,
+): Promise<{ hasMore: boolean; count: number }> {
   const syncState = getSyncState();
 
   if (syncState.historical_done) return { hasMore: false, count: 0 };
-  if (syncState.historical_cursor === undefined) return { hasMore: false, count: 0 };
+  if (syncState.historical_cursor === undefined)
+    return { hasMore: false, count: 0 };
 
   const chunkMs = HISTORICAL_CHUNK_DAYS * 86_400_000;
   const cursor = syncState.historical_cursor;
@@ -392,7 +429,9 @@ async function runHistoricalChunk(provider: EmailProvider): Promise<{ hasMore: b
     isLastChunk = true;
   }
 
-  syncLog.debug(`Historical chunk: ${since.toISOString().slice(0, 10)} → ${until.toISOString().slice(0, 10)}`);
+  syncLog.debug(
+    `Historical chunk: ${since.toISOString().slice(0, 10)} → ${until.toISOString().slice(0, 10)}`,
+  );
 
   const chunkEstimate = (await provider.getMessageCount(since, until)) ?? 0;
 
@@ -410,16 +449,22 @@ async function runHistoricalChunk(provider: EmailProvider): Promise<{ hasMore: b
   let totalFetched = 0;
 
   while (true) {
-    const result = await provider.listMessages(since, until, pageToken, (fetched) => {
-      emitProgress({
-        running: true,
-        progress: totalFetched + fetched,
-        total: Math.max(chunkEstimate, totalFetched + fetched),
-        message: "Syncing history",
-        phase: "historical",
-        historicalCursor: since.getTime(),
-      });
-    }, true /* headersOnly — historical uses headers only, no body scan */);
+    const result = await provider.listMessages(
+      since,
+      until,
+      pageToken,
+      (fetched) => {
+        emitProgress({
+          running: true,
+          progress: totalFetched + fetched,
+          total: Math.max(chunkEstimate, totalFetched + fetched),
+          message: "Syncing history",
+          phase: "historical",
+          historicalCursor: since.getTime(),
+        });
+      },
+      true /* headersOnly — historical uses headers only, no body scan */,
+    );
 
     if (result.messages.length > 0) {
       processMessagesBatch(result.messages);
@@ -473,7 +518,9 @@ export async function runSync(licensedOverride?: boolean): Promise<void> {
 
   try {
     const connection = await provider.connect();
-    syncLog.info(`Provider connected (${connection.type}, canModify: ${connection.canModify})`);
+    syncLog.info(
+      `Provider connected (${connection.type}, canModify: ${connection.canModify})`,
+    );
 
     // getLicenseStatus() calls loadLicense() which uses safeStorage — unavailable in
     // worker threads. When licensedOverride is provided (worker context), skip it entirely.
@@ -483,11 +530,12 @@ export async function runSync(licensedOverride?: boolean): Promise<void> {
       syncLog.info(licensed ? "License: active" : "License: none");
     } else {
       const licenseStatus = getLicenseStatus();
-      syncLog.info(licenseStatus.active
-        ? `License: valid (${licenseStatus.tier})`
-        : "License: none"
+      syncLog.info(
+        licenseStatus.active
+          ? `License: valid (${licenseStatus.tier})`
+          : "License: none",
       );
-      licensed = licenseStatus.active && await hasValidLicense();
+      licensed = licenseStatus.active && (await hasValidLicense());
     }
 
     // Phase 1: Incremental sync (always runs — window is 30d free / 365d licensed on first run)
@@ -496,18 +544,33 @@ export async function runSync(licensedOverride?: boolean): Promise<void> {
     // Phase 2: Historical headers-only sync (licensed users only, walks back to year 2000)
     if (licensed) {
       const syncState = getSyncState();
-      if (!syncState.historical_done && syncState.historical_cursor !== undefined) {
+      if (
+        !syncState.historical_done &&
+        syncState.historical_cursor !== undefined
+      ) {
         syncLog.info("Starting historical sync");
         let hasMore = true;
         let historicalMessages = 0;
         let historicalChunks = 0;
+        let emptyChunks = 0;
         while (hasMore) {
           const result = await runHistoricalChunk(provider);
           hasMore = result.hasMore;
           historicalMessages += result.count;
           historicalChunks++;
+          emptyChunks = result.count === 0 ? emptyChunks + 1 : 0;
+          if (emptyChunks > 2) {
+            recomputeAllVendorFlags();
+            updateSyncState({ historical_done: 1 });
+            syncLog.info(
+              "Historical sync: no messages in 2 consecutive chunks, stopping early",
+            );
+            break;
+          }
         }
-        syncLog.info(`Historical sync complete: ${historicalMessages} messages in ${historicalChunks} chunks`);
+        syncLog.info(
+          `Historical sync complete: ${historicalMessages} messages in ${historicalChunks} chunks`,
+        );
       }
     }
 
@@ -516,9 +579,15 @@ export async function runSync(licensedOverride?: boolean): Promise<void> {
     const syncState = getSyncState();
     const duration = ((Date.now() - startTime) / 1000).toFixed(1);
     const d = getDb();
-    const { msgCount } = d.prepare("SELECT COUNT(*) as msgCount FROM messages").get() as { msgCount: number };
-    const { vendorCount } = d.prepare("SELECT COUNT(*) as vendorCount FROM vendors").get() as { vendorCount: number };
-    syncLog.info(`Sync completed (${duration}s) — ${msgCount.toLocaleString()} messages, ${vendorCount.toLocaleString()} vendors`);
+    const { msgCount } = d
+      .prepare("SELECT COUNT(*) as msgCount FROM messages")
+      .get() as { msgCount: number };
+    const { vendorCount } = d
+      .prepare("SELECT COUNT(*) as vendorCount FROM vendors")
+      .get() as { vendorCount: number };
+    syncLog.info(
+      `Sync completed (${duration}s) — ${msgCount.toLocaleString()} messages, ${vendorCount.toLocaleString()} vendors`,
+    );
 
     currentStatus.lastSyncAt = Date.now();
     emitProgress({
