@@ -1,7 +1,7 @@
 import { createHash, randomBytes } from "node:crypto";
 import type { EmailProvider, EmailMessage, EmailConnection } from "./types";
 import { loadCredentials, saveCredentials } from "../credentials";
-import { resolveUnsubscribe, runLoopbackAuth } from "./utils";
+import { resolveUnsubscribe, runLoopbackAuth, cleanHtml } from "./utils";
 
 // Injected at build time via electron-vite define.
 // Set MICROSOFT_CLIENT_ID env var before building.
@@ -236,11 +236,12 @@ function parseGraphMessage(msg: GraphMessage): EmailMessage {
   const bodyText =
     msg.body?.contentType === "text" ? msg.body.content : undefined;
 
-  const bodyPreview = (bodyText || (bodyHtml?.replace(/<[^>]*>/g, " ") ?? ""))
+const bodyPreview = (bodyText || cleanHtml(bodyHtml))
     .replace(/\s+/g, " ")
     .trim()
-    .substring(0, 150) || msg.bodyPreview?.substring(0, 150) || "";
-
+    .substring(0, 150)
+    || msg.bodyPreview?.substring(0, 150)
+    || "";
   const rawHeaders = Object.fromEntries(
     (msg.internetMessageHeaders || []).map((h) => [h.name, h.value])
   );
