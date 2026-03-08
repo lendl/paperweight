@@ -236,12 +236,10 @@ function parseGraphMessage(msg: GraphMessage): EmailMessage {
   const bodyText =
     msg.body?.contentType === "text" ? msg.body.content : undefined;
 
-const bodyPreview = (bodyText || cleanHtml(bodyHtml))
+  const bodyPreview = (bodyText || cleanHtml(bodyHtml))
     .replace(/\s+/g, " ")
     .trim()
-    .substring(0, 150)
-    || msg.bodyPreview?.substring(0, 150)
-    || "";
+    .substring(0, 150) || msg.bodyPreview?.substring(0, 150) || "";
   const rawHeaders = Object.fromEntries(
     (msg.internetMessageHeaders || []).map((h) => [h.name, h.value])
   );
