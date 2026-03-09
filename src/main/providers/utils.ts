@@ -259,3 +259,17 @@ export function resolveUnsubscribeUrl(
   const result = resolveUnsubscribe(listUnsubscribeHeader, undefined, bodyHtml, subject);
   return result?.url;
 }
+
+// Cleans an HTML string by removing styles, scripts, and all HTML tags.
+export function cleanHtml(html: string | undefined)
+{
+  if (!html) return "";
+
+  return html
+    // Remove <style>...</style> blocks
+    .replace(/<style[\s\S]*?<\/style>/gi, "")
+    // Remove <script>...</script> blocks
+    .replace(/<script[\s\S]*?<\/script>/gi, "")
+    // Remove all remaining HTML tags
+    .replace(/<[^>]*>/g, " ");
+}
