@@ -1,7 +1,7 @@
 import { SITE_CONFIG } from "@/utils/config";
 
 export default async function PrivacyPage() {
-  const lastUpdated = "Feb 9, 2026";
+  const lastUpdated = "Mar 12, 2026";
 
   return (
     <div className="container max-w-7xl mx-auto w-full px-4 pt-24 pb-12">
@@ -33,6 +33,12 @@ export default async function PrivacyPage() {
             <strong>Modify emails</strong> - to trash, archive, or mark emails
             as spam when you choose
           </li>
+          <li>
+            <strong>Google API Services User Data Policy</strong> -
+            Paperweight's use and transfer to any other app of information
+            received from Google APIs will adhere to the Google API Services
+            User Data Policy, including the Limited Use requirements.
+          </li>
         </ul>
         <p>
           All processing happens <strong>locally on your device</strong>. We
@@ -44,6 +50,16 @@ export default async function PrivacyPage() {
           The desktop App does not collect any data. Not even analytics or usage
           data. Everything happens locally on your device.
         </p>
+        <ul>
+          <li>
+            When you connect an email account, Paperweight accesses your emails
+            locally via your provider's API. That data is stored in a local
+            database on your computer and never transmitted to our servers. You
+            can delete it at any time by disconnecting your account in the app
+            or uninstalling — both remove all locally stored data. OAuth tokens
+            used to authenticate are stored locally and never accessible to us.
+          </li>
+        </ul>
         <p>
           This website may collect limited data when you choose to provide it:
         </p>
@@ -65,6 +81,16 @@ export default async function PrivacyPage() {
             designed to avoid collecting personal data.
           </li>
         </ul>
+
+        <h3>Data protection</h3>
+        <p>
+          All communication between the Paperweight app and your email provider
+          uses secure HTTPS/TLS encryption. OAuth tokens are encrypted and
+          stored locally using your operating system's secure credential store
+          (macOS Keychain or Windows Credential Manager). Any cached email
+          headers or account metadata are stored locally in the application data
+          folder on your device.
+        </p>
 
         <h3>Open source</h3>
         <p>
@@ -92,12 +118,26 @@ export default async function PrivacyPage() {
           </li>
         </ul>
 
-        <h3>Your rights</h3>
+        <h3>Data retention and deletion</h3>
         <p>
-          Since we don't collect or store your data, there's nothing for us to
-          delete or provide access to. Your email data stays with your email
-          provider. You can disconnect Paperweight at any time by revoking OAuth
-          permissions in your email provider's settings.
+          Paperweight retains your Google user data (such as email metadata,
+          found accounts, and OAuth tokens) strictly locally on your own device.
+          We do not retain any of this data on external servers.
+        </p>
+        <p>
+          You can delete this local data at any time by:
+          <ul>
+            <li>
+              <strong>Wipe all data</strong> within the Paperweight app.
+            </li>
+            <li>
+              <strong>Uninstalling the application</strong> from your device.
+            </li>
+            <li>
+              <strong>Revoking Paperweight's OAuth access</strong> from your
+              Provider's Account settings.
+            </li>
+          </ul>
         </p>
 
         <h3>Contact</h3>
