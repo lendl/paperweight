@@ -92,17 +92,17 @@ export default function RootLayout(props: PropsWithChildren) {
                 <div className="py-8">
                   <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm">
                     <div className="flex items-center gap-2">
-                      <span>Built by a silicon intern</span>
-                      <span>·</span>
-                      <span>Approved by</span>
-                      <a
-                        href="https://x.com/wslyvh"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="link link-primary"
-                      >
-                        wslyvh
-                      </a>
+                      <span>
+                        Built by{" "}
+                        <a
+                          href="https://x.com/wslyvh"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="link link-primary"
+                        >
+                          wslyvh
+                        </a>
+                      </span>
                     </div>
                     <div className="flex items-center gap-4">
                       <Link href="/privacy" className="hover:underline">
