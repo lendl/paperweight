@@ -924,5 +924,25 @@
     "comments": [
       "US telecommunications company; sells consumer broadband, TV and mobile under the Spectrum brand (spectrum.com). HQ: 400 Washington Blvd, Stamford, CT 06902."
     ]
+  },
+  {
+    "slug": "dentaquest",
+    "relevant-countries": [
+      "us"
+    ],
+    "name": "DentaQuest",
+    "categories": [
+      "healthcare"
+    ],
+    "address": "DentaQuest, LLC, 465 Medford Street, Suite 150, Boston, MA 02129, USA",
+    "web": "https://www.dentaquest.com",
+    "webform": "https://www.dentaquest.com/en/policies/hipaa-privacy-policy",
+    "email": "privacy@dentaquest.com",
+    "phone": "1-800-451-1249",
+    "suggested-transport-medium": "email",
+    "quality": "tested",
+    "comments": [
+      "US dental benefits administrator; subsidiary of Sun Life Financial. Most members are enrolled through Medicaid/CHIP state programmes, so records are handled under HIPAA rather than GDPR. Privacy Officer mailbox privacy@dentaquest.com."
+    ]
   }
 ]
