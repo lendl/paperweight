@@ -6,6 +6,9 @@
     "src/shared/**/*",
     "src/preload/**/*"
   ],
+  "exclude": [
+    "src/**/*.test.ts"
+  ],
   "compilerOptions": {
     "composite": true,
     "outDir": "./out",

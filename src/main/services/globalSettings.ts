@@ -42,3 +42,8 @@ export function saveGlobalSetting<K extends keyof GlobalSettings>(key: K, value:
   settings[key] = value;
   saveSettings(settings);
 }
+
+/** Clears the in-memory settings cache (for tests). */
+export function resetGlobalSettingsCache(): void {
+  _cache = undefined;
+}

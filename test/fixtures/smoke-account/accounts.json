@@ -1,0 +1,9 @@
+{
+  "accounts": [
+    {
+      "email": "smoke-test@paperweight.test",
+      "providerType": "imap",
+      "registeredAt": 1780910750501
+    }
+  ]
+}

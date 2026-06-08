@@ -23,7 +23,10 @@
     "dist:linux": "electron-rebuild -f -w better-sqlite3 && yarn build && electron-builder --linux --publish never",
     "dist:win": "electron-rebuild -f -w better-sqlite3 && yarn build && electron-builder --win --publish never",
     "scripts:stats": "tsx scripts/release-stats.ts",
-    "test": "jest"
+    "test": "jest",
+    "fixture:regenerate": "yarn build:companies && yarn build:breaches && yarn build:enforcement && ELECTRON_RUN_AS_NODE=1 electron --import tsx scripts/generate-smoke-fixture.ts test/fixtures/smoke-account --replace",
+    "test:smoke": "yarn build && for p in fresh runtime stored; do SMOKE_SKIP_BUILD=1 bash scripts/smoke-boot.sh \"$p\" || exit 1; done",
+    "test:all": "yarn test && yarn test:smoke"
   },
   "build": {
     "appId": "email.paperweight",

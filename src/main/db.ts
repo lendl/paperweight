@@ -59,14 +59,15 @@ function getEnforcementDbPath(): string {
 
 export function getDb(): Database.Database {
   if (!db) {
-    db = new Database(getDbPath());
+    const dbPath = getDbPath();
+    db = new Database(dbPath);
     db.pragma("journal_mode = WAL");
     db.pragma("foreign_keys = ON");
     initSchema(db);
     attachCompaniesDb(db);
     attachBreachesDb(db);
     attachEnforcementDb(db);
-    const tag = basename(_dbPath, ".db").split("_").pop() ?? "?";
+    const tag = basename(dbPath, ".db").split("_").pop() ?? "?";
     dbLog.info(`Database initialized [${tag}]`);
   }
   return db;

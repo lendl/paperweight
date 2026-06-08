@@ -1,0 +1,1 @@
+{"providerType":"imap","imap":{"host":"imap.smoke.test","port":993,"tls":true,"username":"smoke-test@paperweight.test","password":"smoke-fixture-not-real"}}

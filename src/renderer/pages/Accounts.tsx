@@ -192,11 +192,6 @@ export default function Accounts(): JSX.Element {
     volumeFilter || anyBreachFilter || showReviewed || sortBy !== "risk" || page > 1
   );
 
-  function dismissBanner() {
-    localStorage.setItem("accounts_beta_dismissed", "1");
-    setBannerDismissed(true);
-  }
-
   // Keep the current history entry in sync with filter state so the browser back button
   // lands on an entry that already has the correct filters — no flash, no lost state.
   const pathname = location.pathname;

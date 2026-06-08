@@ -126,6 +126,12 @@ export function setStagingMode(active: boolean): void {
   _stagingMode = active;
 }
 
+/** Resets in-memory credential state (for tests). */
+export function resetCredentialsModuleState(): void {
+  _preloaded = undefined;
+  _stagingMode = false;
+}
+
 function getCredentialsPath(emailOverride?: string): string {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { app } = require("electron") as typeof import("electron");
@@ -175,11 +181,15 @@ export function loadCredentials(emailOverride?: string): StoredCredentials | und
   try {
     const data = readFileSync(path);
     if (safeStorage.isEncryptionAvailable()) {
-      const json = safeStorage.decryptString(data);
-      return JSON.parse(json) as StoredCredentials;
-    } else {
-      return JSON.parse(data.toString("utf-8")) as StoredCredentials;
+      try {
+        const json = safeStorage.decryptString(data);
+        return JSON.parse(json) as StoredCredentials;
+      } catch {
+        // Plain-text fallback (dev/CI fixtures, same idea as saveCredentials when encryption is off)
+        return JSON.parse(data.toString("utf-8")) as StoredCredentials;
+      }
     }
+    return JSON.parse(data.toString("utf-8")) as StoredCredentials;
   } catch {
     return undefined;
   }
