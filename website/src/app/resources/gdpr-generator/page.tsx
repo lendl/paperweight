@@ -4,6 +4,7 @@ import type { GdprRequestAction } from "@shared/gdpr/types";
 import { buildGdprGeneratorInitialState } from "@shared/gdpr/resolution";
 import Link from "next/link";
 import { Sparkles } from "lucide-react";
+import { PromoBanner } from "@/components/PromoBanner";
 import companies from "@/data/companies.generated.json";
 import { buildMetadata } from "@/utils/seo";
 
@@ -57,31 +58,14 @@ export default async function GdprGeneratorPage({
 
         <Generator initialState={initialState} initialAction={initialAction} />
 
-        <div className="card mt-24 border border-primary/30 bg-base-300 shadow-lg">
-          <div className="card-body gap-5 sm:gap-6">
-            <div className="flex flex-col gap-5 sm:gap-6 md:flex-row md:items-center md:justify-between">
-              <div className="flex items-start gap-3">
-                <span className="mt-0.5 shrink-0 rounded-lg bg-primary/20 p-2 text-primary">
-                  <Sparkles className="h-5 w-5" strokeWidth={1.75} />
-                </span>
-                <div className="space-y-1.5">
-                  <h2 className="text-xl font-semibold leading-tight">
-                    Do this automatically with Paperweight
-                  </h2>
-                  <p className="max-w-2xl text-sm opacity-90 sm:text-base">
-                    Paperweight scans your inbox to find every company that has
-                    your data, and helps you send deletion requests, unsubscribe
-                    from mailing lists, and clean up your digital footprint in
-                    one place.
-                  </p>
-                </div>
-              </div>
-              <a href="/#download" className="btn btn-primary md:shrink-0">
-                Download Paperweight
-              </a>
-            </div>
-          </div>
-        </div>
+        <PromoBanner
+          className="mt-24"
+          icon={<Sparkles className="h-5 w-5" strokeWidth={1.75} />}
+          title="Do this automatically with Paperweight"
+          description="Paperweight scans your inbox to find every company that has your data, and helps you send deletion requests, unsubscribe from mailing lists, and clean up your digital footprint in one place."
+          href="/#download"
+          actionLabel="Download Paperweight"
+        />
       </div>
     </section>
   );

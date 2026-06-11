@@ -15,6 +15,8 @@ import {
   ChevronRight,
   Coins,
 } from "lucide-react";
+import { PayWithCryptoButton } from "@/components/PayWithCrypto";
+import { IRL_CONFIG } from "@/utils/irl";
 import { PROVIDER_PRESETS } from "@shared/email-providers";
 import {
   AppleLogo,
@@ -454,16 +456,16 @@ export default async function Home() {
                   <div>
                     <p className="text-lg font-medium">Pay with crypto</p>
                     <p className="text-sm opacity-70 mt-2">
-                      Bitcoin, Monero, Zcash, Ethereum, and stablecoins accepted. Payment details and license will be sent by email.
+                      Bitcoin, Monero, Zcash, Ethereum, and stablecoins. Choose a coin, copy the address, and send your receipt when done.
                     </p>
                   </div>
                 </div>
-                <a
-                  href={`mailto:${SITE_CONFIG.CONTACT_EMAIL}?subject=${encodeURIComponent("Paperweight license (crypto)")}`}
-                  className="btn btn-outline btn-accent btn-sm shrink-0 sm:ml-4"
+                <PayWithCryptoButton
+                  pricing={{ priceUsd: IRL_CONFIG.CRYPTO_PRICE }}
+                  className="btn btn-outline btn-accent btn-sm shrink-0 sm:ml-4 plausible-event-name=Pay+Crypto"
                 >
-                  Contact us
-                </a>
+                  Pay with crypto (${IRL_CONFIG.CRYPTO_PRICE})
+                </PayWithCryptoButton>
               </div>
             </div>
 
