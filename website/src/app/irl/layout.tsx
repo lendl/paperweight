@@ -6,9 +6,9 @@ import { IRL_CONFIG } from "@/utils/irl";
 import { buildMetadata } from "@/utils/seo";
 import { jetbrainsMono } from "./fonts";
 
-const IRL_TITLE = "Field notes // Berlin Blockchain Week";
+const IRL_TITLE = "Live at Berlin Blockchain Week · Paperweight";
 const IRL_DESCRIPTION =
-  "Live for Berlin Blockchain Week. Who knows you're here? See what your RSVP shared, with whom, and what to do about it.";
+  "Who knows you're here? See what your RSVP shared, with whom, and what to do about it. Live at Berlin Blockchain Week.";
 
 export const metadata: Metadata = {
   ...buildMetadata({

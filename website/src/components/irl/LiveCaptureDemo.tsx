@@ -39,9 +39,9 @@ function buildRows(signals: ClientSignals): SignalRow[] {
     { label: "Entry", value: "direct (QR)" },
     {
       label: "IP / geo",
-      value: "(redacted)",
+      value: "🔒",
       kind: "redacted",
-      redactedPreview: "███.███.███.███",
+      redactedPreview: "██.██.██.██",
     },
     { label: "Fingerprint", value: signals.fingerprint, kind: "fingerprint" },
   ];
