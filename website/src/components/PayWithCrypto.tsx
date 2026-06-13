@@ -279,7 +279,7 @@ export function PayWithCryptoPanel(props: PayWithCryptoPanelProps) {
           <p className="mt-2">
             Send any equivalent of <span className="text-primary font-bold">${priceUsd} USD*</span> {" "} using the rates below or your wallet&apos;s exchange rate.
           </p>
-          <p className="mt-2 text-xs text-base-content/70">
+          <p className="mt-2 text-sm text-base-content/60">
             *crypto rate during {IRL_CONFIG.EVENT_LABEL} only.
           </p>
         </header>

@@ -15,9 +15,9 @@ export function IrlCtaSection() {
         title="A tool you own"
         description={
           <>
-            Paperweight is a free, open-source desktop app (MIT). A perpetual license
-            supports open-source software and unlocks unlimited sync history, multi-account, and all V1 updates.
-            One-time purchase, permanent use, no subscriptions and no hidden fees. Passes the{" "}
+            Paperweight is a free, open-source desktop app (MIT). But you can support
+            open-source software by buying a perpetual license. This unlocks unlimited sync history, multi-account, and all V1 updates.
+            One-time purchase, permanent use and no hidden fees. It passes the{" "}
             <Link
               href="https://x.com/VitalikButerin/status/2010621884811845708"
               className="link link-accent"
@@ -46,7 +46,7 @@ export function IrlCtaSection() {
             Pay with card (${IRL_CONFIG.LICENSE_PRICE})
           </a>
         </div>
-        <p className="text-xs opacity-60">
+        <p className="text-sm opacity-60">
           *${IRL_CONFIG.CRYPTO_PRICE} crypto rate during {IRL_CONFIG.EVENT_LABEL} only.
         </p>
       </ActionCard>
