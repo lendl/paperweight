@@ -1,0 +1,54 @@
+{
+  "slug": "sysco",
+  "generated_at": "2026-06-30T08:42:04.735Z",
+  "breach": {
+    "slug": "sysco",
+    "company_name": "Sysco",
+    "runs": [],
+    "categories": [
+      "services"
+    ],
+    "address": "Sysco Corporation, 1390 Enclave Parkway, Houston, TX 77077, USA",
+    "web": "https://www.sysco.com",
+    "webform": "https://cloud.email.sysco.com/sys-privacy",
+    "phone": "1-281-584-1390",
+    "suggested_transport_medium": "webform",
+    "name": "Sysco",
+    "title": "Sysco",
+    "domain": "sysco.com",
+    "breach_date": "2026-06-15",
+    "added_date": "2026-06-28T15:57:29Z",
+    "modified_date": "2026-06-28T15:57:29Z",
+    "pwn_count": 2691852,
+    "description": "In June 2026, the food distribution company <a href=\"https://cybernews.com/news/sysco-shinyhunters-61-million-salesforce-records/\" target=\"_blank\" rel=\"noopener\">Sysco was targeted by a ShinyHunters \"pay or leak\" extortion campaign</a>. Data was subsequently published containing 2.7M unique email addresses belonging to staff and customers. The data also contained largely corporate contact information including names, phone numbers, physical addresses, internal job titles, and customer feedback.",
+    "attribution": "ShinyHunters",
+    "logo_path": "https://logos.haveibeenpwned.com/Sysco.png",
+    "data_classes": [
+      "Customer feedback",
+      "Email addresses",
+      "Employers",
+      "Job titles",
+      "Names",
+      "Phone numbers",
+      "Physical addresses",
+      "Usernames"
+    ],
+    "is_verified": true,
+    "is_sensitive": false
+  },
+  "enforcement": {
+    "records": [],
+    "total_fines": 0
+  },
+  "content": {
+    "aboutCompany": "Sysco Corporation is the largest foodservice distributor in North America, supplying food and related products to restaurants, hotels, hospitals and schools across the US and internationally. Most of the people it holds data on are business customers and employees, not retail shoppers.",
+    "keyTakeaways": [
+      "In June 2026 the ShinyHunters group leaked around 2.7 million Sysco email addresses plus names, phone numbers, business addresses, job titles and employers — mostly business customers and staff.",
+      "Sysco never publicly confirmed the breach, and the attackers' claim of 61 million records is far higher than the 2.7 million accounts Have I Been Pwned actually loaded.",
+      "No passwords leaked, so the main risk is targeted scams: fake invoices, payment-change fraud and phone calls that quote your real details."
+    ],
+    "incidentAndExposure": "In June 2026 the extortion group ShinyHunters published data it said it stole from Sysco's Salesforce environment. It claimed around 61 million records; what actually surfaced — and what Have I Been Pwned loaded — was 2,691,852 unique email addresses for a mix of Sysco staff and customers, along with names, phone numbers, physical addresses, job titles, employers, usernames and customer feedback. No passwords or financial account numbers were included. Sysco had not publicly confirmed the breach when the data was released, so the attackers' figures are claims, not verified totals.",
+    "timelineAndCause": "ShinyHunters listed Sysco on its dark-web extortion site in mid-June 2026 with a short deadline to pay. The breach is dated 15 June 2026; when the deadline passed the group published the data, and Have I Been Pwned added 2,691,852 accounts on 28 June 2026. It is part of a wider 2026 campaign in which ShinyHunters stole companies' Salesforce data and ran \"pay or leak\" extortion.",
+    "nextSteps": "Most people in this leak are business contacts — restaurant owners, chefs, procurement and foodservice buyers — or Sysco staff, and the data is ideal for business scams. Expect emails and calls posing as Sysco or your account rep about an order, an unpaid invoice, a delivery problem or an \"account on hold\", using your real name, role and company. The dangerous one is a request to change payment or bank details — that is how invoice fraud works. Don't click links, don't call the number in the message, and confirm any payment change by phoning a Sysco contact you already have.\n\nTo get your details removed, use <a href=\"https://cloud.email.sysco.com/sys-privacy\" target=\"_blank\" rel=\"noopener\">Sysco's Global Data Privacy Portal</a> to ask what they hold and request deletion (the same portal covers the UK, Ireland and Canada). No passwords leaked, so there's nothing to reset on your Sysco account — but your username and email are now public, so watch for \"unusual login\" phishing, and if you reuse your Sysco password anywhere else, change it there."
+  }
+}

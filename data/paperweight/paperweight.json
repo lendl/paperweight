@@ -944,5 +944,25 @@
     "comments": [
       "US dental benefits administrator; subsidiary of Sun Life Financial. Most members are enrolled through Medicaid/CHIP state programmes, so records are handled under HIPAA rather than GDPR. Privacy Officer mailbox privacy@dentaquest.com."
     ]
+  },
+  {
+    "slug": "sysco",
+    "relevant-countries": [
+      "us"
+    ],
+    "name": "Sysco",
+    "categories": [
+      "services"
+    ],
+    "address": "Sysco Corporation, 1390 Enclave Parkway, Houston, TX 77077, USA",
+    "web": "https://www.sysco.com",
+    "webform": "https://cloud.email.sysco.com/sys-privacy",
+    "phone": "1-281-584-1390",
+    "suggested-transport-medium": "webform",
+    "quality": "tested",
+    "comments": [
+      "US-based global foodservice distributor; the largest in North America. Exposed contacts are largely business customers (restaurants, healthcare and education foodservice operators) and employees rather than retail consumers.",
+      "Data subject rights requests go through Sysco's Global Data Privacy Portal (OneTrust webform)."
+    ]
   }
 ]
