@@ -1,8 +1,8 @@
 /**
  * Release stats: fetches all releases from GitHub API and prints download stats per platform.
  *
- * Run: npx ts-node scripts/release-stats.ts
- *   or: yarn ts-node scripts/release-stats.ts
+ * Run: yarn scripts:stats
+ *   or: yarn scripts:stats -- --all
  */
 
 const REPO = "wslyvh/paperweight";
@@ -44,32 +44,51 @@ function formatDate(iso: string): string {
   return new Date(iso).toISOString().slice(0, 10);
 }
 
+const EMPTY_COUNTS = (): Record<Platform, number> => ({
+  win: 0,
+  macos: 0,
+  "linux-appimage": 0,
+  "linux-deb": 0,
+  other: 0,
+});
+
+function countReleaseAssets(release: GitHubRelease): Record<Platform, number> {
+  const counts = EMPTY_COUNTS();
+  for (const asset of release.assets) {
+    const p = detectPlatform(asset.name);
+    counts[p] += asset.download_count;
+  }
+  return counts;
+}
+
+function printRelease(release: GitHubRelease, counts: Record<Platform, number>): void {
+  const date = formatDate(release.published_at);
+  console.log(`\nRelease ${release.tag_name} - ${date}`);
+  console.log(`Win - ${counts.win}`);
+  console.log(`Mac - ${counts.macos}`);
+  console.log(`Linux AppImage - ${counts["linux-appimage"]}`);
+  console.log(`Linux deb - ${counts["linux-deb"]}`);
+}
+
 async function main() {
+  const showAll = process.argv.includes("--all");
   const releases = await fetchReleases();
 
-  const totals: Record<Platform, number> = {
-    win: 0,
-    macos: 0,
-    "linux-appimage": 0,
-    "linux-deb": 0,
-    other: 0,
-  };
+  const releaseStats = releases.map((release) => ({
+    release,
+    counts: countReleaseAssets(release),
+  }));
 
-  for (const release of releases) {
-    const date = formatDate(release.published_at);
-    console.log(`\nRelease ${release.tag_name} - ${date}`);
-
-    const counts: Record<Platform, number> = { win: 0, macos: 0, "linux-appimage": 0, "linux-deb": 0, other: 0 };
-    for (const asset of release.assets) {
-      const p = detectPlatform(asset.name);
-      counts[p] += asset.download_count;
-      totals[p] += asset.download_count;
+  const totals = EMPTY_COUNTS();
+  for (const { counts } of releaseStats) {
+    for (const platform of Object.keys(counts) as Platform[]) {
+      totals[platform] += counts[platform];
     }
+  }
 
-    console.log(`Win - ${counts.win}`);
-    console.log(`Mac - ${counts.macos}`);
-    console.log(`Linux AppImage - ${counts["linux-appimage"]}`);
-    console.log(`Linux deb - ${counts["linux-deb"]}`);
+  const releasesToShow = showAll ? releaseStats : releaseStats.slice(0, 2);
+  for (const { release, counts } of releasesToShow) {
+    printRelease(release, counts);
   }
 
   const grandTotal = totals.win + totals.macos + totals["linux-appimage"] + totals["linux-deb"] + totals.other;
