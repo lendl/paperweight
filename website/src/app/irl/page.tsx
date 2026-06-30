@@ -3,6 +3,7 @@ import { LiveCaptureDemo } from "@/components/irl/LiveCaptureDemo";
 import { IrlCtaSection } from "@/components/irl/IrlCtaSection";
 import { jetbrainsMono } from "@/app/irl/fonts";
 import { SITE_CONFIG } from "@/utils/config";
+import { IRL_CONFIG } from "@/utils/irl";
 
 const SECTION_GAP = "mt-12";
 const CONTENT_GAP = "gap-10";
@@ -84,7 +85,7 @@ export default function IrlPage() {
 
       <section className={`${SECTION_GAP} space-y-2 text-sm leading-relaxed opacity-80`}>
         <h2 className="text-xl font-semibold opacity-100">👋 Say hi</h2>
-        <p>I&apos;m around at Berlin Blockchain Week.</p>
+        <p>I&apos;m around at {IRL_CONFIG.EVENT_LABEL}.</p>
         <p>
           Signal: <span className="font-medium text-base-content">wslyvh.42</span> or {" "}
           <a

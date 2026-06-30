@@ -6,7 +6,6 @@ import { Check, Copy } from "lucide-react";
 import { useCoinPrices, type CoinId, type CoinPrices } from "@/hooks/useCoinPrices";
 import { PAYMENT_ADDRESSES } from "@/utils/payments";
 import { SITE_CONFIG } from "@/utils/config";
-import { IRL_CONFIG } from "@/utils/irl";
 
 type PaymentCoinId = "ethereum" | "bitcoin" | "zcash" | "monero";
 
@@ -19,6 +18,8 @@ const PAYMENT_COINS: { id: PaymentCoinId; label: string }[] = [
 
 export interface PayWithCryptoPricing {
   priceUsd: number;
+  /** When set, shows an event-week promo footnote in the modal header. */
+  eventLabel?: string;
 }
 
 interface PayWithCryptoPanelProps {
@@ -269,7 +270,7 @@ function PaymentSelector(props: {
 export function PayWithCryptoPanel(props: PayWithCryptoPanelProps) {
   const supportEmail = props.supportEmail ?? SITE_CONFIG.CONTACT_EMAIL;
   const { loading, quote, prices } = useCoinPrices();
-  const { priceUsd } = props.pricing;
+  const { priceUsd, eventLabel } = props.pricing;
 
   return (
     <div className={props.className}>
@@ -277,11 +278,17 @@ export function PayWithCryptoPanel(props: PayWithCryptoPanelProps) {
         <header className="space-y-1">
           <h2 className="text-xl font-semibold">Pay with crypto</h2>
           <p className="mt-2">
-            Send any equivalent of <span className="text-primary font-bold">${priceUsd} USD*</span> {" "} using the rates below or your wallet&apos;s exchange rate.
+            Send any equivalent of{" "}
+            <span className="text-primary font-bold">
+              ${priceUsd} USD{eventLabel ? "*" : ""}
+            </span>{" "}
+            using the rates below or your wallet&apos;s exchange rate.
           </p>
-          <p className="mt-2 text-sm text-base-content/60">
-            *crypto rate during {IRL_CONFIG.EVENT_LABEL} only.
-          </p>
+          {eventLabel ? (
+            <p className="mt-2 text-xs text-base-content/60">
+              *${priceUsd} crypto rate during {eventLabel} only.
+            </p>
+          ) : null}
         </header>
       ) : null}
 

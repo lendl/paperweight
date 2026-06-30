@@ -16,7 +16,7 @@ import {
   Coins,
 } from "lucide-react";
 import { PayWithCryptoButton } from "@/components/PayWithCrypto";
-import { IRL_CONFIG } from "@/utils/irl";
+import { getCryptoPayPricing, getCryptoPrice, LICENSE_PRICING } from "@/utils/pricing";
 import { PROVIDER_PRESETS } from "@shared/email-providers";
 import {
   AppleLogo,
@@ -397,7 +397,7 @@ export default async function Home() {
                 </div>
                 <div className="text-center mb-6">
                   <h3 className="text-2xl font-bold mb-2">Perpetual License</h3>
-                  <div className="text-4xl font-bold mb-2">$69</div>
+                  <div className="text-4xl font-bold mb-2">${LICENSE_PRICING.LICENSE_PRICE}</div>
                   <div className="text-sm opacity-60 mb-1">
                     One-time payment
                   </div>
@@ -461,10 +461,10 @@ export default async function Home() {
                   </div>
                 </div>
                 <PayWithCryptoButton
-                  pricing={{ priceUsd: IRL_CONFIG.CRYPTO_PRICE }}
+                  pricing={getCryptoPayPricing()}
                   className="btn btn-outline btn-accent btn-sm shrink-0 sm:ml-4 plausible-event-name=Pay+Crypto"
                 >
-                  Pay with crypto (${IRL_CONFIG.CRYPTO_PRICE})
+                  Pay with crypto (${getCryptoPrice()})
                 </PayWithCryptoButton>
               </div>
             </div>

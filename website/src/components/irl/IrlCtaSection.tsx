@@ -6,8 +6,11 @@ import { ActionCard } from "@/components/ActionCard";
 import { PayWithCryptoButton } from "@/components/PayWithCrypto";
 import { SITE_CONFIG } from "@/utils/config";
 import { IRL_CONFIG } from "@/utils/irl";
+import { getCryptoPayPricing, getCryptoPrice, LICENSE_PRICING } from "@/utils/pricing";
 
 export function IrlCtaSection() {
+  const cryptoPrice = getCryptoPrice();
+
   return (
     <section id="get-it">
       <ActionCard
@@ -32,10 +35,10 @@ export function IrlCtaSection() {
       >
         <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap mt-2">
           <PayWithCryptoButton
-            pricing={{ priceUsd: IRL_CONFIG.CRYPTO_PRICE }}
+            pricing={getCryptoPayPricing()}
             className="btn btn-primary plausible-event-name=IRL+Pay+Crypto"
           >
-            Pay with crypto (${IRL_CONFIG.CRYPTO_PRICE})
+            Pay with crypto (${cryptoPrice})
           </PayWithCryptoButton>
           <a
             href={SITE_CONFIG.LICENSE_URL}
@@ -43,11 +46,11 @@ export function IrlCtaSection() {
             target="_blank"
             rel="noopener noreferrer"
           >
-            Pay with card (${IRL_CONFIG.LICENSE_PRICE})
+            Pay with card (${LICENSE_PRICING.LICENSE_PRICE})
           </a>
         </div>
         <p className="text-sm opacity-60">
-          *${IRL_CONFIG.CRYPTO_PRICE} crypto rate during {IRL_CONFIG.EVENT_LABEL} only.
+          *${cryptoPrice} crypto rate during {IRL_CONFIG.EVENT_LABEL} only.
         </p>
       </ActionCard>
     </section>

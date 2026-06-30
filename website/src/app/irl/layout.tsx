@@ -1,14 +1,15 @@
 import type { Metadata } from "next";
 import type { PropsWithChildren } from "react";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { SITE_CONFIG } from "@/utils/config";
 import { IRL_CONFIG } from "@/utils/irl";
 import { buildMetadata } from "@/utils/seo";
 import { jetbrainsMono } from "./fonts";
 
-const IRL_TITLE = "Live at Berlin Blockchain Week · Paperweight";
+const IRL_TITLE = `Live at ${IRL_CONFIG.EVENT_LABEL} · Paperweight`;
 const IRL_DESCRIPTION =
-  "Who knows you're here? See what your RSVP shared, with whom, and what to do about it. Live at Berlin Blockchain Week.";
+  `Who knows you're here? See what your RSVP shared, with whom, and what to do about it. Live at ${IRL_CONFIG.EVENT_LABEL}.`;
 
 export const metadata: Metadata = {
   ...buildMetadata({
@@ -25,6 +26,10 @@ export const metadata: Metadata = {
 };
 
 export default function IrlLayout(props: PropsWithChildren) {
+  if (!IRL_CONFIG.EVENT_ACTIVE) {
+    redirect("/");
+  }
+
   return (
     <div className="min-h-screen bg-base-100">
       <div className="mx-auto max-w-2xl px-5 py-6 pb-12">
