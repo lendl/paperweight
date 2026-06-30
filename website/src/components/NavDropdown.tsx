@@ -9,21 +9,19 @@ interface NavDropdownProps {
 
 export function NavDropdown({ label, href, links }: NavDropdownProps) {
   return (
-    <div className="dropdown dropdown-end dropdown-hover relative">
+    <div className="dropdown dropdown-end dropdown-hover">
       <Link href={href} className="btn btn-ghost btn-sm">
         {label}
       </Link>
-      <div aria-hidden className="absolute top-full right-0 h-2 w-52" />
-      <ul
-        tabIndex={0}
-        className="dropdown-content menu rounded-box z-10 mt-2 w-52 max-h-80 overflow-y-auto bg-base-200 p-2 shadow-lg backdrop-blur"
-      >
-        {links.map((item) => (
-          <li key={item.href}>
-            <Link href={item.href}>{item.label}</Link>
-          </li>
-        ))}
-      </ul>
+      <div tabIndex={0} className="dropdown-content z-10 w-52 pt-2">
+        <ul className="menu rounded-box max-h-80 w-full overflow-y-auto bg-base-200 p-2 shadow-lg backdrop-blur">
+          {links.map((item) => (
+            <li key={item.href}>
+              <Link href={item.href}>{item.label}</Link>
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 }
