@@ -3,15 +3,24 @@ import { ActionCard } from "@/components/ActionCard";
 
 interface TakeActionCardsProps {
   title?: string;
+  company?: string;
 }
 
-export function TakeActionCards({ title = "Take Action" }: TakeActionCardsProps) {
+function buildGdprGeneratorHref(company?: string) {
+  if (!company) {
+    return "/resources/gdpr-generator";
+  }
+  const params = new URLSearchParams({ company });
+  return `/resources/gdpr-generator?${params.toString()}`;
+}
+
+export function TakeActionCards({ title = "Take Action", company }: TakeActionCardsProps) {
   return (
     <section className="space-y-4">
       <h2 className="text-xl font-semibold">{title}</h2>
       <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
         <ActionCard
-          href="/resources/gdpr-generator"
+          href={buildGdprGeneratorHref(company)}
           icon={<Shield className="h-5 w-5" />}
           title="Generate a GDPR request"
           description="Build a ready-to-send access or deletion request."

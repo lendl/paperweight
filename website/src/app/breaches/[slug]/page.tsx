@@ -354,7 +354,7 @@ export default async function BreachPage({
       </div>
 
       <div className="divider" />
-      <TakeActionCards />
+      <TakeActionCards company={model.slug} />
     </section>
   );
 }

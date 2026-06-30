@@ -388,7 +388,11 @@ export function findCompanyByName(
 ): CompanyOption | undefined {
   const normalized = query?.trim().toLowerCase();
   if (!normalized) return undefined;
-  return companies.find((item) => item.name.trim().toLowerCase() === normalized);
+  return companies.find(
+    (item) =>
+      item.name.trim().toLowerCase() === normalized ||
+      item.slug.trim().toLowerCase() === normalized,
+  );
 }
 
 export function getPreferredDomain(
