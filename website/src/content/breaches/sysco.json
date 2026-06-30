@@ -1,6 +1,6 @@
 {
   "slug": "sysco",
-  "generated_at": "2026-06-30T08:42:04.735Z",
+  "generated_at": "2026-06-30T09:48:16.700Z",
   "breach": {
     "slug": "sysco",
     "company_name": "Sysco",
@@ -11,6 +11,7 @@
     "address": "Sysco Corporation, 1390 Enclave Parkway, Houston, TX 77077, USA",
     "web": "https://www.sysco.com",
     "webform": "https://cloud.email.sysco.com/sys-privacy",
+    "email": "dataprivacy@sysco.com",
     "phone": "1-281-584-1390",
     "suggested_transport_medium": "webform",
     "name": "Sysco",

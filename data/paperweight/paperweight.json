@@ -118,10 +118,12 @@
     ],
     "web": "https://www.kpn.com",
     "webform": "https://www.kpn.com/algemeen/missie-en-privacy-statement",
+    "email": "rechtenavg@kpn.com",
     "suggested-transport-medium": "webform",
     "quality": "verified",
     "comments": [
-      "Verificatie vaak via MijnKPN/portaal."
+      "Verificatie vaak via MijnKPN/portaal.",
+      "GDPR rights mailbox published on kpn.com privacy statement."
     ]
   },
   {
@@ -139,10 +141,12 @@
     ],
     "web": "https://www.vodafoneziggo.nl",
     "webform": "https://www.vodafoneziggo.nl/privacy/",
+    "email": "privacyoffice@vodafoneziggo.com",
     "suggested-transport-medium": "webform",
     "quality": "verified",
     "comments": [
-      "Privacy Office/portaal voor DSAR."
+      "Consumer privacy statement lists postal contact only (Postbus 43048, Utrecht); DSAR via Mijn Ziggo/MyVodafone.",
+      "DPO mailbox privacyoffice@vodafoneziggo.com confirmed by VodafoneZiggo."
     ]
   },
   {
@@ -161,10 +165,12 @@
     ],
     "web": "https://www.odido.nl",
     "webform": "https://www.odido.nl/privacy",
+    "email": "_dpo@odido.nl",
     "suggested-transport-medium": "webform",
     "quality": "verified",
     "comments": [
-      "Incl. Tele2/Ben/Simpel; specifieke formulieren per product."
+      "Incl. Tele2/Ben/Simpel; specifieke formulieren per product.",
+      "DPO email published on odido.nl/privacy."
     ]
   },
   {
@@ -358,10 +364,11 @@
     ],
     "web": "https://www.aldi.nl",
     "webform": "https://www.aldi.nl/privacystatement.html",
+    "email": "dataprotection@aldi.be",
     "suggested-transport-medium": "webform",
     "quality": "verified",
     "comments": [
-      "Contact via formulier/klantenservice."
+      "aldi.nl privacy coordinator prefers contact form (Compliance) or post; dataprotection@aldi.be is the ALDI group data-protection mailbox."
     ]
   },
   {
@@ -488,23 +495,6 @@
     "quality": "verified",
     "comments": [
       "Privacyverklaring (PDF)."
-    ]
-  },
-  {
-    "slug": "decathlon",
-    "relevant-countries": [
-      "nl"
-    ],
-    "name": "Decathlon",
-    "categories": [
-      "shopping"
-    ],
-    "web": "https://www.decathlon.nl",
-    "webform": "https://www.decathlon.nl/privacy",
-    "suggested-transport-medium": "webform",
-    "quality": "verified",
-    "comments": [
-      "DSAR via formulier/portaal."
     ]
   },
   {
@@ -687,7 +677,7 @@
       "social"
     ],
     "web": "https://www.twitter.com",
-    "webform": "https://privacy.x.com/en/policy",
+    "webform": "https://help.x.com/en/forms/privacy",
     "suggested-transport-medium": "webform",
     "quality": "verified",
     "comments": [
@@ -833,10 +823,12 @@
     "address": "Hallmark Cards, Inc., P.O. Box 419034, Kansas City, MO 64141, USA",
     "web": "https://www.hallmark.com",
     "webform": "https://care.hallmark.com/s/privacy-form",
+    "email": "GDPR@hallmark.com",
     "phone": "1-877-203-2262",
     "suggested-transport-medium": "webform",
     "quality": "verified",
     "comments": [
+      "US privacy requests via webform/phone; GDPR@hallmark.com published on hallmark.co.uk for Hallmark Cards PLC data-rights requests.",
       "Consumer Care postal address used; corporate HQ is 2501 McGee Street, Kansas City, MO 64108."
     ]
   },
@@ -850,11 +842,12 @@
       "healthcare"
     ],
     "web": "https://www.chipsoft.com",
-    "suggested-transport-medium": "webform",
+    "email": "FG@chipsoft.nl",
+    "suggested-transport-medium": "email",
     "quality": "tested",
     "comments": [
       "Healthcare IT vendor (HiX EPD). ChipSoft processes patient data on behalf of hospitals, so DSARs normally go to the hospital or GP acting as controller.",
-      "Dedicated DPO/privacy email or webform not verified — add after confirmation."
+      "DSARs to ChipSoft as controller (e.g. recruitment data) go to the DPO at FG@chipsoft.nl."
     ]
   },
   {
@@ -920,9 +913,12 @@
       "communication"
     ],
     "web": "https://www.charter.com",
+    "email": "PPRLegal_Privacy_and_Cybersecurity@charter.com",
+    "suggested-transport-medium": "email",
     "quality": "tested",
     "comments": [
-      "US telecommunications company; sells consumer broadband, TV and mobile under the Spectrum brand (spectrum.com). HQ: 400 Washington Blvd, Stamford, CT 06902."
+      "US telecommunications company; sells consumer broadband, TV and mobile under the Spectrum brand (spectrum.com). HQ: 400 Washington Blvd, Stamford, CT 06902.",
+      "Privacy and cybersecurity legal contact published on charter.com."
     ]
   },
   {
@@ -957,12 +953,13 @@
     "address": "Sysco Corporation, 1390 Enclave Parkway, Houston, TX 77077, USA",
     "web": "https://www.sysco.com",
     "webform": "https://cloud.email.sysco.com/sys-privacy",
+    "email": "dataprivacy@sysco.com",
     "phone": "1-281-584-1390",
     "suggested-transport-medium": "webform",
     "quality": "tested",
     "comments": [
       "US-based global foodservice distributor; the largest in North America. Exposed contacts are largely business customers (restaurants, healthcare and education foodservice operators) and employees rather than retail consumers.",
-      "Data subject rights requests go through Sysco's Global Data Privacy Portal (OneTrust webform)."
+      "Data subject rights requests go through Sysco's Global Data Privacy Portal (OneTrust webform); dataprivacy@sysco.com published on sysco.com privacy policy."
     ]
   }
 ]
