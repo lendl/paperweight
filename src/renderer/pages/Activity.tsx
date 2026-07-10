@@ -3,18 +3,7 @@ import { useNavigate } from "react-router-dom";
 import type { ActivityEntry } from "@shared/types";
 import { formatAbsoluteDate, formatBytes } from "@shared/formatting";
 import Pagination from "../components/Pagination";
-
-const ACTION_LABELS: Record<ActivityEntry["actionType"], string> = {
-  unsubscribed: "Unsubscribed",
-  trashed: "Moved to trash",
-  spam_reported: "Reported spam",
-};
-
-const ACTION_COLORS: Record<ActivityEntry["actionType"], string> = {
-  unsubscribed: "text-success",
-  trashed: "text-base-content/50",
-  spam_reported: "text-warning",
-};
+import { ACTION_COLORS, activityEntryLabel } from "../utils/activityLabels";
 
 const LIMIT = 50;
 
@@ -57,6 +46,7 @@ export default function Activity(): JSX.Element {
           <div className="font-mono text-sm divide-y divide-base-300">
             {entries.map((entry) => {
               const groupKey = entry.vendorSlug ?? entry.vendorDomain ?? String(entry.vendorId);
+              const actionClass = ACTION_COLORS[entry.actionType];
               return (
                 <div
                   key={entry.id}
@@ -65,9 +55,18 @@ export default function Activity(): JSX.Element {
                   <span className="text-base-content/40 shrink-0">
                     {formatAbsoluteDate(entry.actionedAt)}
                   </span>
-                  <span className={`shrink-0 ${ACTION_COLORS[entry.actionType]}`}>
-                    {ACTION_LABELS[entry.actionType]}
-                  </span>
+                  {entry.caseId ? (
+                    <button
+                      className={`shrink-0 text-left hover:underline ${actionClass}`}
+                      onClick={() => navigate(`/cases/${entry.caseId}`)}
+                    >
+                      {activityEntryLabel(entry)}
+                    </button>
+                  ) : (
+                    <span className={`shrink-0 ${actionClass}`}>
+                      {activityEntryLabel(entry)}
+                    </span>
+                  )}
                   <button
                     className="text-left truncate text-base-content/80 hover:text-base-content transition-colors"
                     onClick={() => navigate(`/accounts/${encodeURIComponent(groupKey)}`)}
@@ -75,8 +74,12 @@ export default function Activity(): JSX.Element {
                     {entry.vendorName}
                   </button>
                   <span className="text-base-content/40 text-right shrink-0">
-                    {entry.messageCount.toLocaleString()} emails
-                    {entry.sizeBytes > 0 && ` · ${formatBytes(entry.sizeBytes)}`}
+                    {entry.messageCount > 0 && (
+                      <>
+                        {entry.messageCount.toLocaleString()} emails
+                        {entry.sizeBytes > 0 && ` · ${formatBytes(entry.sizeBytes)}`}
+                      </>
+                    )}
                   </span>
                 </div>
               );

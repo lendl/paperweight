@@ -426,7 +426,7 @@ export function createImapProvider(): EmailProvider {
       }
     },
 
-    async sendEmail(to: string, subject: string, body: string): Promise<void> {
+    async sendEmail(to: string, subject: string, body: string, inReplyTo?: string): Promise<string | undefined> {
       const creds = loadCredentials();
       if (!creds?.imap) throw new Error("No IMAP credentials stored");
       if (!creds.imap.smtp) throw new Error("No SMTP server configured for this account");
@@ -444,12 +444,16 @@ export function createImapProvider(): EmailProvider {
       });
 
       try {
-        await transporter.sendMail({
+        // nodemailer generates the Message-ID; most SMTP servers pass it
+        // through unchanged, but we can't read back what actually went out.
+        const info = await transporter.sendMail({
           from: creds.imap.username,
           to,
           subject,
           text: body,
+          ...(inReplyTo ? { inReplyTo, references: inReplyTo } : {}),
         });
+        return info.messageId;
       } finally {
         transporter.close();
       }

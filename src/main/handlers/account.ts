@@ -339,18 +339,19 @@ export function registerAccountHandlers(): void {
 
   ipcMain.handle(
     IPC.sendEmail,
-    async (_event, to: unknown, subject: unknown, body: unknown) => {
+    async (_event, to: unknown, subject: unknown, body: unknown, inReplyTo?: unknown) => {
       if (!isString(to) || !to.includes("@")) throw new Error("Invalid recipient");
       if (!isString(subject)) throw new Error("Invalid subject");
       if (!isString(body)) throw new Error("Invalid body");
+      if (inReplyTo !== undefined && !isString(inReplyTo)) throw new Error("Invalid inReplyTo");
       // Log only the recipient domain — the full address is personal data
       // to the user). Domain alone is enough to debug provider/host issues.
       const recipientDomain = to.split("@")[1] || "unknown";
       try {
         const provider = getProvider();
         actionLog.info(`Sending email via ${provider.type} to <${recipientDomain}>`);
-        await provider.sendEmail(to, subject, body);
-        return { success: true };
+        const messageId = await provider.sendEmail(to, subject, body, inReplyTo);
+        return { success: true, messageId };
       } catch (err) {
         const msg = err instanceof Error ? err.message : String(err);
         actionLog.error(`Send email via <${recipientDomain}> failed: ${msg}`);

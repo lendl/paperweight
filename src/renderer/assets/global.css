@@ -4,6 +4,28 @@
   themes: dim --default, silk;
 }
 
+@theme {
+  --color-case: #ffb366;
+}
+
+/*
+ * Request-type badges — explicit foreground/background so soft neutrals stay
+ * readable on dark themes (DaisyUI badge-soft + badge-neutral often fails here).
+ */
+.badge.badge-request-access {
+  border-width: 1px;
+  background-color: color-mix(in oklch, var(--color-base-content) 12%, transparent);
+  color: color-mix(in oklch, var(--color-base-content) 72%, var(--color-base-100));
+  border-color: color-mix(in oklch, var(--color-base-content) 20%, transparent);
+}
+
+.badge.badge-request-deletion {
+  border-width: 1px;
+  background-color: color-mix(in oklch, var(--color-primary) 18%, transparent);
+  color: var(--color-primary);
+  border-color: color-mix(in oklch, var(--color-primary) 35%, transparent);
+}
+
 .recharts-wrapper :focus,
 .recharts-wrapper :focus-visible,
 .recharts-wrapper [tabindex]:focus,

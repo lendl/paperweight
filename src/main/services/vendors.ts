@@ -1,4 +1,5 @@
 import { getDb } from "../db";
+import { caseActivityFilter, mapCaseActivityFields } from "./cases";
 import { RISK_CATEGORIES } from "@shared/languages";
 import { APP_CONFIG } from "@shared/config";
 import { getRootDomain } from "@shared/utils";
@@ -906,14 +907,19 @@ export function getVendorDetail(groupKey: string): VendorDetail {
     }
   }
 
+  const { clause, params } = caseActivityFilter();
   const activityRows = d
     .prepare(
-      `SELECT id, vendor_id, action_type, message_count, size_bytes, actioned_at
-       FROM action_log WHERE vendor_id = ? ORDER BY actioned_at DESC`
+      `SELECT a.id, a.vendor_id, a.action_type, a.message_count, a.size_bytes, a.actioned_at, a.case_id,
+              c.request_type as case_request_type, c.outcome as case_outcome
+       FROM action_log a LEFT JOIN gdpr_cases c ON c.id = a.case_id
+       WHERE a.vendor_id = ? AND ${clause}
+       ORDER BY a.actioned_at DESC`,
     )
-    .all(vendor.id) as Array<{
+    .all(vendor.id, ...params) as Array<{
       id: number; vendor_id: number; action_type: string;
       message_count: number; size_bytes: number; actioned_at: number;
+      case_id: number | null; case_request_type: string | null; case_outcome: string | null;
     }>;
   const activityLog: ActivityEntry[] = activityRows.map((r) => ({
     id: r.id,
@@ -925,6 +931,7 @@ export function getVendorDetail(groupKey: string): VendorDetail {
     messageCount: r.message_count,
     sizeBytes: r.size_bytes,
     actionedAt: r.actioned_at,
+    ...mapCaseActivityFields(r),
   }));
 
   return { vendor: enrichedVendor, company, senders, bulkMessages, bulkMessageCount, accountMessages, allMessages, activityLog };

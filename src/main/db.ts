@@ -1,8 +1,16 @@
+// INVARIANT: keep this module's top-level import graph light. db.ts is loaded
+// very early and by nearly everything, including during the account-connect DB
+// handling (temp DB → deterministic per-account DB swap). Do NOT add top-level
+// imports of electron or other heavy/main-only modules — access them lazily via
+// require() inside functions (see getCompaniesDbPath below). Anything imported
+// here (e.g. ./migrations for migrateActionLog) must itself keep its top-level
+// graph light for the same reason.
 import Database from "better-sqlite3";
 import { join, basename } from "path";
 import { existsSync, unlinkSync } from "fs";
 import { dbLog } from "./utils/log";
 import { emailToFileKey } from "./credentials";
+import { migrateActionLog } from "./migrations";
 
 let db: Database.Database | undefined;
 
@@ -146,6 +154,20 @@ function initSchema(d: Database.Database) {
     CREATE INDEX IF NOT EXISTS idx_messages_status ON messages(status);
     CREATE INDEX IF NOT EXISTS idx_messages_unsubscribe_method ON messages(unsubscribe_method) WHERE unsubscribe_method IS NOT NULL AND unsubscribe_method != 'none';
 
+    CREATE TABLE IF NOT EXISTS gdpr_cases (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      vendor_id INTEGER NOT NULL,
+      request_type TEXT NOT NULL,
+      outcome TEXT,
+      recipient_email TEXT,
+      sent_message_id TEXT,
+      opened_at INTEGER NOT NULL,
+      closed_at INTEGER,
+      FOREIGN KEY (vendor_id) REFERENCES vendors(id) ON DELETE CASCADE
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_gdpr_cases_vendor ON gdpr_cases(vendor_id);
+
     CREATE TABLE IF NOT EXISTS action_log (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       vendor_id INTEGER NOT NULL,
@@ -155,6 +177,10 @@ function initSchema(d: Database.Database) {
       message_count INTEGER NOT NULL DEFAULT 0,
       size_bytes INTEGER NOT NULL DEFAULT 0,
       actioned_at INTEGER NOT NULL,
+      case_id INTEGER REFERENCES gdpr_cases(id) ON DELETE CASCADE,
+      message_id TEXT,
+      subject TEXT,
+      body TEXT,
       FOREIGN KEY (vendor_id) REFERENCES vendors(id) ON DELETE CASCADE
     );
 
@@ -184,6 +210,8 @@ function initSchema(d: Database.Database) {
       created_at TEXT NOT NULL DEFAULT (datetime('now'))
     );
   `);
+
+  migrateActionLog(d);
 
   d.prepare("INSERT OR IGNORE INTO sync_state (id) VALUES (1)").run();
 }

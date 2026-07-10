@@ -1,4 +1,5 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { Copy } from "lucide-react";
 
 interface ActionModalProps {
   isOpen: boolean;
@@ -15,6 +16,10 @@ interface ActionModalProps {
   onSecondary?: () => void | Promise<void>;
   onCancel: () => void;
   loading?: boolean;
+  /** When set, shows a copy-to-clipboard button beside Cancel. */
+  copyText?: string;
+  /** When set, shows an error message below the modal body. */
+  error?: string;
 }
 
 const VARIANT_CLASS: Record<string, string> = {
@@ -38,8 +43,27 @@ export default function ActionModal({
   onSecondary,
   onCancel,
   loading,
+  copyText,
+  error,
 }: ActionModalProps): JSX.Element {
   const ref = useRef<HTMLDialogElement>(null);
+  const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    if (!isOpen) setCopied(false);
+  }, [isOpen]);
+
+  const handleCopy = async () => {
+    if (!copyText) return;
+    try {
+      await navigator.clipboard.writeText(copyText);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // Clipboard can reject (permission denied, unfocused document). Swallow —
+      // the text is still visible for manual copy; just don't flash "Copied".
+    }
+  };
 
   useEffect(() => {
     const dialog = ref.current;
@@ -60,7 +84,19 @@ export default function ActionModal({
       <div className="modal-box" onClick={(e) => e.stopPropagation()}>
         <h3 className="font-bold text-lg mb-4">{title}</h3>
         <div className="text-sm text-base-content/80 space-y-3">{children}</div>
+        {error && <p className="text-error text-sm mt-3">{error}</p>}
         <div className="modal-action mt-6">
+          {copyText && (
+            <button
+              type="button"
+              className="btn btn-ghost btn-sm btn-square"
+              onClick={handleCopy}
+              disabled={loading}
+              title={copied ? "Copied" : "Copy to clipboard"}
+            >
+              <Copy className="w-4 h-4" />
+            </button>
+          )}
           <button
             className="btn btn-ghost btn-sm"
             onClick={onCancel}

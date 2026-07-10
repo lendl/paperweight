@@ -1,7 +1,15 @@
 import type {
   AccountInfo,
   AccountSummary,
+  ActionType,
   ActivityEntry,
+  CreateGdprCaseInput,
+  GdprCase,
+  GdprCaseDetail,
+  GdprCaseEventInput,
+  GdprCaseStatus,
+  GdprCaseSummary,
+  GdprCaseReplies,
   DashboardStats,
   ChartTrend,
   EmailConnection,
@@ -78,6 +86,16 @@ export const IPC = {
   updateDownloaded: "update-downloaded",
   installUpdate: "install-update",
   sendEmail: "send-email",
+  createGdprCase: "create-gdpr-case",
+  getGdprCase: "get-gdpr-case",
+  queryGdprCases: "query-gdpr-cases",
+  closeGdprCase: "close-gdpr-case",
+  reopenGdprCase: "reopen-gdpr-case",
+  escalateGdprCase: "escalate-gdpr-case",
+  addGdprCaseEvent: "add-gdpr-case-event",
+  getGdprCaseReplies: "get-gdpr-case-replies",
+  linkGdprCaseMessage: "link-gdpr-case-message",
+  unlinkGdprCaseMessage: "unlink-gdpr-case-message",
 } as const;
 
 export interface UpdateInfo {
@@ -149,7 +167,18 @@ export interface ElectronAPI {
     to: string,
     subject: string,
     body: string,
-  ) => Promise<{ success: boolean; error?: string }>;
+    inReplyTo?: string,
+  ) => Promise<{ success: boolean; error?: string; messageId?: string }>;
+  createGdprCase: (input: CreateGdprCaseInput) => Promise<GdprCase>;
+  getGdprCase: (id: number) => Promise<GdprCaseDetail | undefined>;
+  queryGdprCases: (filter?: { status?: GdprCaseStatus; vendorId?: number }) => Promise<GdprCaseSummary[]>;
+  closeGdprCase: (id: number) => Promise<void>;
+  reopenGdprCase: (id: number) => Promise<void>;
+  escalateGdprCase: (id: number) => Promise<void>;
+  addGdprCaseEvent: (caseId: number, actionType: ActionType, details?: GdprCaseEventInput) => Promise<void>;
+  getGdprCaseReplies: (caseId: number) => Promise<GdprCaseReplies>;
+  linkGdprCaseMessage: (caseId: number, messageId: string) => Promise<void>;
+  unlinkGdprCaseMessage: (caseId: number, messageId: string) => Promise<void>;
 }
 
 export type { SyncStatus };

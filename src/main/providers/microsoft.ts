@@ -584,7 +584,12 @@ export function createMicrosoftProvider(): EmailProvider {
       await graphPatch(`${GRAPH_ME_BASE}/messages/${messageId}`, { isRead });
     },
 
-    async sendEmail(to: string, subject: string, body: string): Promise<void> {
+    // Graph's sendMail only allows custom "x-" prefixed internetMessageHeaders,
+    // not standard headers like In-Reply-To/References, so inReplyTo is accepted
+    // for interface parity but can't be applied here — Outlook mail is sent
+    // unthreaded. Proper threading would require the reply/createReply action
+    // against the original message's Graph id, which we don't currently store.
+    async sendEmail(to: string, subject: string, body: string, _inReplyTo?: string): Promise<string | undefined> {
       const token = await getValidAccessToken();
       const response = await fetch(`${GRAPH_ME_BASE}/sendMail`, {
         method: "POST",
@@ -604,6 +609,34 @@ export function createMicrosoftProvider(): EmailProvider {
       if (!response.ok) {
         const text = await response.text();
         throw new Error(`Graph sendMail failed (${response.status}): ${text}`);
+      }
+      // sendMail returns 202 with no body, and Exchange assigns the
+      // internetMessageId itself — read it back from Sent Items. Best effort:
+      // the sent item may not have landed yet.
+      try {
+        const recent = (await graphGet(
+          `${GRAPH_ME_BASE}/mailFolders/sentitems/messages?$top=10&$orderby=sentDateTime desc&$select=subject,internetMessageId,toRecipients`
+        )) as {
+          value?: Array<{
+            subject?: string;
+            internetMessageId?: string;
+            toRecipients?: Array<{ emailAddress?: { address?: string } }>;
+          }>;
+        };
+        // Match on subject AND recipient: GDPR subjects are identical template
+        // strings across vendors, so subject alone would return a different
+        // vendor's just-sent request. Results are newest-first, so find() takes
+        // the most recent match.
+        const target = to.toLowerCase();
+        return recent.value?.find(
+          (m) =>
+            m.subject === subject &&
+            m.toRecipients?.some(
+              (r) => r.emailAddress?.address?.toLowerCase() === target,
+            ),
+        )?.internetMessageId;
+      } catch {
+        return undefined;
       }
     },
 

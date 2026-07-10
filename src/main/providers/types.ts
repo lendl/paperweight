@@ -52,6 +52,10 @@ export interface EmailProvider {
   markAsSpam(messageId: string): Promise<void>;
   markAsRead(messageId: string, isRead: boolean): Promise<void>;
 
-  // Send a plain-text email from the connected account.
-  sendEmail(to: string, subject: string, body: string): Promise<void>;
+  // Send a plain-text email from the connected account. Resolves with the
+  // sent mail's RFC Message-ID when the provider can determine it (used to
+  // thread-match replies to GDPR cases), else undefined. When inReplyTo is
+  // given (the Message-ID of an earlier sent mail), the new mail is threaded
+  // to it via In-Reply-To/References headers where the provider supports it.
+  sendEmail(to: string, subject: string, body: string, inReplyTo?: string): Promise<string | undefined>;
 }

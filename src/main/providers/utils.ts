@@ -304,7 +304,13 @@ export function cleanHtml(html: string | undefined)
 // when they contain non-ASCII (e.g. "Désinscrire"). Body uses 8bit transfer
 // encoding when non-ASCII; receivers supporting 8BITMIME (effectively all
 // modern hosts) accept this. Subject and body must already be UTF-8 strings.
-export function buildRfc822Message(from: string, to: string, subject: string, body: string): string {
+export function buildRfc822Message(
+  from: string,
+  to: string,
+  subject: string,
+  body: string,
+  inReplyTo?: string
+): string {
   const isAscii = (s: string): boolean => /^[\x00-\x7F]*$/.test(s);
   const encodeHeader = (s: string): string =>
     isAscii(s) ? s : `=?UTF-8?B?${Buffer.from(s, "utf-8").toString("base64")}?=`;
@@ -315,6 +321,7 @@ export function buildRfc822Message(from: string, to: string, subject: string, bo
     `From: ${from}`,
     `To: ${to}`,
     `Subject: ${encodeHeader(subject)}`,
+    ...(inReplyTo ? [`In-Reply-To: ${inReplyTo}`, `References: ${inReplyTo}`] : []),
     "MIME-Version: 1.0",
     "Content-Type: text/plain; charset=utf-8",
     `Content-Transfer-Encoding: ${transferEncoding}`,

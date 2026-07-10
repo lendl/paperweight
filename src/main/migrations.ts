@@ -1,6 +1,5 @@
 import { join } from "path";
 import { existsSync, unlinkSync } from "fs";
-import { app } from "electron";
 import Database from "better-sqlite3";
 import { APP_CONFIG } from "@shared/config";
 import { findPresetByHost } from "@shared/email-providers";
@@ -11,8 +10,16 @@ import {
   loadCredentials,
   saveCredentials,
 } from "./credentials";
-import { testSmtpConnection } from "./providers/smtp";
 import { appLog } from "./utils/log";
+
+// db.ts imports migrateActionLog from this module and is deliberately kept free
+// of heavy top-level imports (it lazy-requires electron itself). So we access
+// electron lazily here too, keeping this module's load graph light.
+function userDataDir(): string {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const { app } = require("electron") as typeof import("electron");
+  return app.getPath("userData");
+}
 
 /**
  * v0.2 — multi-account integration
@@ -20,7 +27,7 @@ import { appLog } from "./utils/log";
  * Also cleans up any __staging__.enc left behind by a crashed OAuth flow.
  */
 function cleanupStaleFiles(): void {
-  const userData = app.getPath("userData");
+  const userData = userDataDir();
   const legacy = [
     `${APP_CONFIG.DOMAIN}.db`,
     `${APP_CONFIG.DOMAIN}.db-wal`,
@@ -50,6 +57,10 @@ function cleanupStaleFiles(): void {
  * — the UI surfaces a banner so the user can reconfigure via Server Settings.
  */
 async function backfillSmtpFromPreset(): Promise<void> {
+  // Lazily imported: providers/smtp pulls in the full provider/sync graph
+  // (which relies on build-time defines), and db.ts imports this module for
+  // migrateActionLog — keeping this import out of module scope keeps db.ts light.
+  const { testSmtpConnection } = await import("./providers/smtp");
   for (const acc of listAccounts()) {
     const creds = loadCredentials(acc.email);
     if (!creds?.imap || creds.imap.smtp) continue;
@@ -96,7 +107,7 @@ async function backfillSmtpFromPreset(): Promise<void> {
  *   - gmail: already all-mail with stable IDs; marker only.
  */
 function migrateScanScopeAllMail(): void {
-  const userData = app.getPath("userData");
+  const userData = userDataDir();
 
   for (const acc of listAccounts()) {
     const creds = loadCredentials(acc.email);
@@ -141,6 +152,28 @@ function migrateScanScopeAllMail(): void {
       db?.close();
     }
   }
+}
+
+/**
+ * Schema migration — adds GDPR case columns to action_log tables created before
+ * gdpr_cases existed. CREATE TABLE IF NOT EXISTS skips existing tables, so new
+ * columns need ALTER. Called from initSchema (not runMigrations) so it fires on
+ * every DB open, including account switches via reconnectDb.
+ */
+export function migrateActionLog(d: Database.Database): void {
+  const existing = new Set(
+    (d.pragma("table_info(action_log)") as Array<{ name: string }>).map((c) => c.name)
+  );
+  const columns: Array<[string, string]> = [
+    ["case_id", "case_id INTEGER REFERENCES gdpr_cases(id) ON DELETE CASCADE"],
+    ["message_id", "message_id TEXT"],
+    ["subject", "subject TEXT"],
+    ["body", "body TEXT"],
+  ];
+  for (const [name, ddl] of columns) {
+    if (!existing.has(name)) d.exec(`ALTER TABLE action_log ADD COLUMN ${ddl}`);
+  }
+  d.exec("CREATE INDEX IF NOT EXISTS idx_action_log_case ON action_log(case_id) WHERE case_id IS NOT NULL");
 }
 
 /**

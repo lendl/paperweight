@@ -21,11 +21,18 @@ export function formatUtcStrictDate(day: string, format: string): string {
 }
 
 export function formatRelativeDate(ts: number): string {
+  // dayjs says "a few seconds ago" for anything under 45s, which is both noisy
+  // and wide enough to wrap tight columns. Floor the last minute to "just now".
+  if (Math.abs(Date.now() - ts) < 60_000) return "just now";
   return dayjs(ts).fromNow();
 }
 
 export function formatAbsoluteDate(ts: number): string {
   return dayjs(ts).format("MMM D, YYYY");
+}
+
+export function formatShortDate(ts: number): string {
+  return dayjs(ts).format("MMM D");
 }
 
 export function formatBytes(bytes: number): string {

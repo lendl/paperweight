@@ -1,8 +1,16 @@
 import { getDb } from "../db";
 import { toUtcDayString, utcMidnightMs } from "@shared/formatting";
-import type { DashboardStats, ChartTrend, ImpactStats, RiskCounts, ActivityEntry } from "@shared/types";
+import type {
+  DashboardStats,
+  ChartTrend,
+  ImpactStats,
+  RiskCounts,
+  ActivityEntry,
+  ActionType,
+} from "@shared/types";
 import { getSetting } from "./settings";
 import { COMPUTED_RISK_CASE } from "./vendors";
+import { caseActivityFilter, mapCaseActivityFields } from "./cases";
 import { APP_CONFIG } from "@shared/config";
 
 export function getDashboardStats(): DashboardStats {
@@ -203,20 +211,29 @@ export function getRiskCounts(): RiskCounts {
 
 export function getActivityLog(limit: number, offset: number): { entries: ActivityEntry[]; total: number } {
   const d = getDb();
-  const total = (d.prepare("SELECT COUNT(*) as c FROM action_log").get() as { c: number }).c;
+  const { clause, params } = caseActivityFilter();
+  const total = (
+    d.prepare(`SELECT COUNT(*) as c FROM action_log a WHERE ${clause}`).get(
+      ...params,
+    ) as { c: number }
+  ).c;
   const rows = d.prepare(
     `SELECT a.id, a.vendor_id,
             COALESCE(NULLIF(v.name, ''), v.root_domain, 'Unknown') as vendor_name,
             v.root_domain as vendor_domain,
-            v.company_slug as vendor_slug, a.action_type, a.message_count, a.size_bytes, a.actioned_at
+            v.company_slug as vendor_slug, a.action_type, a.message_count, a.size_bytes, a.actioned_at, a.case_id,
+            c.request_type as case_request_type, c.outcome as case_outcome
      FROM action_log a
      JOIN vendors v ON v.id = a.vendor_id
+     LEFT JOIN gdpr_cases c ON c.id = a.case_id
+     WHERE ${clause}
      ORDER BY a.actioned_at DESC
-     LIMIT ? OFFSET ?`
-  ).all(limit, offset) as Array<{
+     LIMIT ? OFFSET ?`,
+  ).all(...params, limit, offset) as Array<{
     id: number; vendor_id: number; vendor_name: string;
     vendor_domain: string | null; vendor_slug: string | null;
     action_type: string; message_count: number; size_bytes: number; actioned_at: number;
+    case_id: number | null; case_request_type: string | null; case_outcome: string | null;
   }>;
   return {
     total,
@@ -226,10 +243,11 @@ export function getActivityLog(limit: number, offset: number): { entries: Activi
       vendorName: r.vendor_name,
       vendorDomain: r.vendor_domain ?? undefined,
       vendorSlug: r.vendor_slug ?? undefined,
-      actionType: r.action_type as ActivityEntry["actionType"],
+      actionType: r.action_type as ActionType,
       messageCount: r.message_count,
       sizeBytes: r.size_bytes,
       actionedAt: r.actioned_at,
+      ...mapCaseActivityFields(r),
     })),
   };
 }

@@ -3,7 +3,7 @@ import { Outlet, NavLink } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import makeBlockie from "ethereum-blockies-base64";
 import SyncStatusBar from "./SyncStatusBar";
-import { Check, Contact, Inbox, Mail, Settings } from "lucide-react";
+import { Check, Contact, FolderClosed, Inbox, Mail, Settings } from "lucide-react";
 import { useAccounts } from "../hooks/useAccounts";
 
 const navItems = [
@@ -21,6 +21,11 @@ const navItems = [
     to: "/accounts",
     label: "Accounts",
     icon: <Contact className="w-5 h-5" aria-hidden="true" />,
+  },
+  {
+    to: "/cases",
+    label: "Cases",
+    icon: <FolderClosed className="w-5 h-5" aria-hidden="true" />,
   },
 ];
 
@@ -142,7 +147,7 @@ export default function AppShell(): JSX.Element {
       {/* Main column */}
       <div className="flex flex-1 flex-col min-w-0">
         <SyncStatusBar />
-        <main className="flex-1 p-6 overflow-y-auto">
+        <main className="flex-1 p-6 overflow-y-auto" style={{ scrollbarGutter: "stable" }}>
           <Outlet />
         </main>
       </div>

@@ -165,8 +165,32 @@ const api: ElectronAPI = {
 
   installUpdate: () => ipcRenderer.invoke(IPC.installUpdate),
 
-  sendEmail: (to, subject, body) =>
-    ipcRenderer.invoke(IPC.sendEmail, to, subject, body),
+  sendEmail: (to, subject, body, inReplyTo) =>
+    ipcRenderer.invoke(IPC.sendEmail, to, subject, body, inReplyTo),
+
+  createGdprCase: (input) => ipcRenderer.invoke(IPC.createGdprCase, input),
+
+  getGdprCase: (id) => ipcRenderer.invoke(IPC.getGdprCase, id),
+
+  queryGdprCases: (filter) => ipcRenderer.invoke(IPC.queryGdprCases, filter),
+
+  closeGdprCase: (id) => ipcRenderer.invoke(IPC.closeGdprCase, id),
+
+  reopenGdprCase: (id) => ipcRenderer.invoke(IPC.reopenGdprCase, id),
+
+  escalateGdprCase: (id) => ipcRenderer.invoke(IPC.escalateGdprCase, id),
+
+  addGdprCaseEvent: (caseId, actionType, details) =>
+    ipcRenderer.invoke(IPC.addGdprCaseEvent, caseId, actionType, details),
+
+  getGdprCaseReplies: (caseId) =>
+    ipcRenderer.invoke(IPC.getGdprCaseReplies, caseId),
+
+  linkGdprCaseMessage: (caseId, messageId) =>
+    ipcRenderer.invoke(IPC.linkGdprCaseMessage, caseId, messageId),
+
+  unlinkGdprCaseMessage: (caseId, messageId) =>
+    ipcRenderer.invoke(IPC.unlinkGdprCaseMessage, caseId, messageId),
 };
 
 contextBridge.exposeInMainWorld("api", api);

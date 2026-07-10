@@ -22,6 +22,7 @@ import {
   hasValidLicense,
   getLicenseStatus,
 } from "./settings";
+import { syncCaseRepliesForVendors } from "./cases";
 import { loadCredentials } from "../credentials";
 import { getProvider } from "../providers/ProviderFactory";
 import { APP_CONFIG } from "@shared/config";
@@ -178,6 +179,10 @@ export function processMessagesBatch(messages: EmailMessage[]): void {
     updateVendorStats(vid);
     updateVendorFlags(vid);
   }
+
+  // Record any newly-arrived thread-matched replies against open GDPR cases so
+  // the Dashboard/Cases nudges reflect them without needing the detail view.
+  syncCaseRepliesForVendors([...vendorIds]);
 }
 
 // --- Sync orchestration ---

@@ -9,6 +9,8 @@ export interface EmailTemplate {
   accessSubject: string;
   access: string;
   accountRefLabel: string;
+  reminder: string;
+  followup: string;
 }
 
 export interface CompanyOption {

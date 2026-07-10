@@ -47,6 +47,22 @@ If you need any information to verify my identity, feel free to reach out. Thank
 
 Best regards,
 %NAME%`,
+    reminder: `To whom it may concern,
+
+On %DATE% I sent a request regarding my personal data, but I have not yet received a response.
+
+This is a friendly reminder — please let me know the status of my request.
+
+Best regards,
+%NAME%`,
+    followup: `To whom it may concern,
+
+On %DATE% I sent you a request regarding my personal data. Under data protection law (GDPR), you are required to respond to such requests and more than 30 days have now passed without a response.
+
+Please respond to my request without further delay. If I do not receive a response, I may file a complaint with the data protection authority.
+
+Best regards,
+%NAME%`,
   },
   nl: {
     accountRefLabel: "Accountreferentie",
@@ -84,6 +100,22 @@ Accountgegevens:
 - E-mail: %EMAIL%%ACCOUNT_REF%
 
 Ik verzoek u binnen 30 dagen op dit verzoek te reageren.
+
+Met vriendelijke groet,
+%NAME%`,
+    reminder: `Geachte heer/mevrouw,
+
+Op %DATE% heb ik u een verzoek gestuurd met betrekking tot mijn persoonsgegevens, maar ik heb nog geen reactie ontvangen.
+
+Dit is een vriendelijke herinnering — kunt u mij laten weten wat de status van mijn verzoek is?
+
+Met vriendelijke groet,
+%NAME%`,
+    followup: `Geachte heer/mevrouw,
+
+Op %DATE% heb ik u een verzoek gestuurd met betrekking tot mijn persoonsgegevens. Op grond van de AVG bent u verplicht op een dergelijk verzoek te reageren en er zijn inmiddels meer dan 30 dagen verstreken zonder reactie.
+
+Ik verzoek u zonder verder uitstel op mijn verzoek te reageren. Indien ik geen reactie ontvang, kan ik een klacht indienen bij de Autoriteit Persoonsgegevens.
 
 Met vriendelijke groet,
 %NAME%`,
@@ -127,6 +159,22 @@ Ich bitte um eine Antwort innerhalb von 30 Tagen.
 
 Mit freundlichen Grüßen,
 %NAME%`,
+    reminder: `Sehr geehrte Damen und Herren,
+
+am %DATE% habe ich Ihnen eine Anfrage bezüglich meiner personenbezogenen Daten gesendet, jedoch noch keine Antwort erhalten.
+
+Dies ist eine freundliche Erinnerung — bitte teilen Sie mir den Stand meiner Anfrage mit.
+
+Mit freundlichen Grüßen,
+%NAME%`,
+    followup: `Sehr geehrte Damen und Herren,
+
+am %DATE% habe ich Ihnen eine Anfrage bezüglich meiner personenbezogenen Daten gesendet. Nach der DSGVO sind Sie verpflichtet, auf solche Anfragen zu antworten, und es sind inzwischen mehr als 30 Tage ohne Antwort vergangen.
+
+Bitte beantworten Sie meine Anfrage ohne weitere Verzögerung. Sollte ich keine Antwort erhalten, behalte ich mir vor, Beschwerde bei der Datenschutzbehörde einzulegen.
+
+Mit freundlichen Grüßen,
+%NAME%`,
   },
   fr: {
     accountRefLabel: "Référence de compte",
@@ -164,6 +212,22 @@ Identifiant de compte :
 - E-mail : %EMAIL%%ACCOUNT_REF%
 
 Je vous prie de bien vouloir répondre à cette demande dans un délai de 30 jours.
+
+Cordialement,
+%NAME%`,
+    reminder: `Madame, Monsieur,
+
+Le %DATE%, je vous ai adressé une demande concernant mes données personnelles, mais je n'ai pas encore reçu de réponse.
+
+Ceci est un rappel amical — merci de me tenir informé(e) de l'état d'avancement de ma demande.
+
+Cordialement,
+%NAME%`,
+    followup: `Madame, Monsieur,
+
+Le %DATE%, je vous ai adressé une demande concernant mes données personnelles. En vertu du RGPD, vous êtes tenu de répondre à une telle demande et plus de 30 jours se sont écoulés sans réponse de votre part.
+
+Je vous prie de répondre à ma demande sans délai supplémentaire. À défaut de réponse, je pourrai déposer une plainte auprès de l'autorité de protection des données.
 
 Cordialement,
 %NAME%`,
@@ -207,6 +271,22 @@ Le ruego que responda a esta solicitud en un plazo de 30 días.
 
 Atentamente,
 %NAME%`,
+    reminder: `Estimado/a señor/a,
+
+El %DATE% le envié una solicitud relativa a mis datos personales, pero aún no he recibido respuesta.
+
+Este es un recordatorio amistoso — le ruego que me informe del estado de mi solicitud.
+
+Atentamente,
+%NAME%`,
+    followup: `Estimado/a señor/a,
+
+El %DATE% le envié una solicitud relativa a mis datos personales. Conforme al RGPD, está obligado a responder a dichas solicitudes y han transcurrido más de 30 días sin respuesta.
+
+Le ruego que responda a mi solicitud sin más demora. De no recibir respuesta, podré presentar una reclamación ante la autoridad de protección de datos.
+
+Atentamente,
+%NAME%`,
   },
   it: {
     accountRefLabel: "Riferimento account",
@@ -247,6 +327,22 @@ La prego di rispondere a questa richiesta entro 30 giorni.
 
 Cordiali saluti,
 %NAME%`,
+    reminder: `Gentile Signore/Signora,
+
+il %DATE% Le ho inviato una richiesta relativa ai miei dati personali, ma non ho ancora ricevuto risposta.
+
+Questo è un cortese promemoria — La prego di informarmi sullo stato della mia richiesta.
+
+Cordiali saluti,
+%NAME%`,
+    followup: `Gentile Signore/Signora,
+
+il %DATE% Le ho inviato una richiesta relativa ai miei dati personali. Ai sensi del GDPR, Lei è tenuto a rispondere a tali richieste e sono ormai trascorsi più di 30 giorni senza risposta.
+
+La prego di rispondere alla mia richiesta senza ulteriore ritardo. In mancanza di risposta, potrò presentare un reclamo all'autorità per la protezione dei dati.
+
+Cordiali saluti,
+%NAME%`,
   },
   pt: {
     accountRefLabel: "Referência de conta",
@@ -284,6 +380,22 @@ Identificador de conta:
 - E-mail: %EMAIL%%ACCOUNT_REF%
 
 Solicito que responda a este pedido no prazo de 30 dias.
+
+Com os melhores cumprimentos,
+%NAME%`,
+    reminder: `Exmo./Exma. Senhor/Senhora,
+
+No dia %DATE% enviei-lhe um pedido relativo aos meus dados pessoais, mas ainda não recebi resposta.
+
+Este é um lembrete amigável — agradeço que me informe sobre o estado do meu pedido.
+
+Com os melhores cumprimentos,
+%NAME%`,
+    followup: `Exmo./Exma. Senhor/Senhora,
+
+No dia %DATE% enviei-lhe um pedido relativo aos meus dados pessoais. Nos termos do RGPD, é obrigado a responder a tais pedidos e já passaram mais de 30 dias sem resposta.
+
+Solicito que responda ao meu pedido sem mais demora. Caso não receba resposta, poderei apresentar uma queixa à autoridade de proteção de dados.
 
 Com os melhores cumprimentos,
 %NAME%`,
@@ -342,6 +454,51 @@ export function buildAccessEmail(
       userName,
     ),
   };
+}
+
+// Reminder/follow-up subjects are "Re: <original>" so the company's mail
+// system threads them onto the original request.
+function buildCaseFollowupEmail(
+  template: "reminder" | "followup",
+  originalSubject: string | undefined,
+  requestType: "access" | "deletion",
+  sentAt: number,
+  userEmail: string,
+  lang = "en",
+  userName?: string,
+) {
+  const t = EMAIL_TEMPLATES[lang] ?? EMAIL_TEMPLATES.en;
+  const subject =
+    originalSubject ?? (requestType === "access" ? t.accessSubject : t.deletionSubject);
+  return {
+    subject: `Re: ${subject}`,
+    body: applyTemplate(t[template], userEmail, undefined, t.accountRefLabel, userName).replace(
+      "%DATE%",
+      new Date(sentAt).toLocaleDateString(lang),
+    ),
+  };
+}
+
+export function buildReminderEmail(
+  originalSubject: string | undefined,
+  requestType: "access" | "deletion",
+  sentAt: number,
+  userEmail: string,
+  lang = "en",
+  userName?: string,
+) {
+  return buildCaseFollowupEmail("reminder", originalSubject, requestType, sentAt, userEmail, lang, userName);
+}
+
+export function buildFollowupEmail(
+  originalSubject: string | undefined,
+  requestType: "access" | "deletion",
+  sentAt: number,
+  userEmail: string,
+  lang = "en",
+  userName?: string,
+) {
+  return buildCaseFollowupEmail("followup", originalSubject, requestType, sentAt, userEmail, lang, userName);
 }
 
 export function buildGdprMessage(context: GdprRequestContext) {

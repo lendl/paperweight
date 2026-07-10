@@ -5,8 +5,8 @@ import type {
   VendorQuery,
   Message,
   UnsubscribeEntry,
-  ActivityEntry,
   WhitelistEntry,
+  GdprCaseSummary,
 } from "@shared/types";
 import {
   formatRelativeDate,
@@ -32,18 +32,14 @@ import {
   ExternalLink,
 } from "lucide-react";
 import ActionModal from "../components/ActionModal";
-
-const ACTION_LABELS: Record<ActivityEntry["actionType"], string> = {
-  unsubscribed: "Unsubscribed",
-  trashed: "Moved to trash",
-  spam_reported: "Reported spam",
-};
-
-const ACTION_COLORS: Record<ActivityEntry["actionType"], string> = {
-  unsubscribed: "text-success",
-  trashed: "text-base-content/50",
-  spam_reported: "text-warning",
-};
+import { CaseListRow } from "../components/CaseListRow";
+import { canAccountSend } from "../utils/account";
+import { errText } from "../utils/errText";
+import {
+  ACTION_COLORS,
+  activityEntryLabel,
+  gdprRequestLabel,
+} from "../utils/activityLabels";
 
 const RISK_BADGE_CLASS: Record<string, string> = {
   high: "badge-error",
@@ -253,6 +249,7 @@ export default function AccountDetail(): JSX.Element {
       total: number;
       restoreState: Record<string, unknown>;
     };
+    openDataTab?: boolean;
   } | null;
 
   const accountNav = locState?.accountNav ?? null;
@@ -279,12 +276,18 @@ export default function AccountDetail(): JSX.Element {
   const [actionLoading, setActionLoading] = useState(false);
   const [doneIds, setDoneIds] = useState<Set<string>>(new Set());
   const [activeItemId, setActiveItemId] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<"actions" | "data" | "emails" | "activity">("actions");
+  const [activeTab, setActiveTab] = useState<"actions" | "data" | "emails" | "cases" | "activity">(
+    locState?.openDataTab ? "data" : "actions",
+  );
   const [pendingDelete, setPendingDelete] = useState<"marketing" | "all" | null>(null);
   const [whitelistModalOpen, setWhitelistModalOpen] = useState(false);
   const [selectedWhitelistValues, setSelectedWhitelistValues] = useState<Set<string>>(new Set());
   const [whitelistLoading, setWhitelistLoading] = useState(false);
   const [whitelistEntries, setWhitelistEntries] = useState<WhitelistEntry[]>([]);
+  const [gdprSendOpen, setGdprSendOpen] = useState(false);
+  const [gdprSendError, setGdprSendError] = useState<string>();
+  const [vendorCases, setVendorCases] = useState<GdprCaseSummary[]>([]);
+  const [canSend, setCanSend] = useState(true);
 
   useEffect(() => {
     if (!groupKey) return;
@@ -299,14 +302,19 @@ export default function AccountDetail(): JSX.Element {
     setPendingDelete(null);
     setWhitelistModalOpen(false);
     setSelectedWhitelistValues(new Set());
+    setGdprSendOpen(false);
+    setGdprSendError(undefined);
+    setVendorCases([]);
     Promise.all([
       window.api.getVendorDetail(decodeURIComponent(groupKey)),
       window.api.getWhitelistEntries(),
       window.api.getSettings(),
+      window.api.getAccountInfo(),
     ])
-      .then(([d, entries, settings]) => {
+      .then(async ([d, entries, settings, accountInfo]) => {
         setDetail(d);
         setWhitelistEntries(entries);
+        setCanSend(canAccountSend(accountInfo));
         setEmailLanguage(detectLanguageFromDomain(d.vendor.root_domain));
         setBreachOpen(
           d.vendor.breachInfo?.some((b) => b.likelyAffected) ?? false,
@@ -316,6 +324,8 @@ export default function AccountDetail(): JSX.Element {
         setRecipientEmail(
           candidate && !isNoReplyEmail(candidate) ? candidate : "",
         );
+        const cases = await window.api.queryGdprCases({ vendorId: d.vendor.id });
+        setVendorCases(cases);
       })
       .catch((err) => setError(err.message ?? "Failed to load"))
       .finally(() => setLoading(false));
@@ -325,6 +335,8 @@ export default function AccountDetail(): JSX.Element {
     if (!groupKey) return;
     const d = await window.api.getVendorDetail(decodeURIComponent(groupKey));
     setDetail(d);
+    const cases = await window.api.queryGdprCases({ vendorId: d.vendor.id });
+    setVendorCases(cases);
   }, [groupKey]);
 
   const refreshWhitelist = useCallback(async () => {
@@ -841,6 +853,44 @@ export default function AccountDetail(): JSX.Element {
     }
   };
 
+  const handleGdprSend = async (): Promise<void> => {
+    const email = dataRequestType === "access" ? accessEmail : deletionEmail;
+    if (!email || !recipientEmail || !detail) return;
+    setActionLoading(true);
+    setGdprSendError(undefined);
+    try {
+      const result = await window.api.sendEmail(recipientEmail, email.subject, email.body);
+      if (!result.success) {
+        setGdprSendError(result.error ?? "Could not send the request.");
+        return;
+      }
+      // The request email is already out. If opening the case fails, tell the
+      // user plainly instead of silently proceeding — otherwise they'd resend
+      // and mail the company twice.
+      let created;
+      try {
+        created = await window.api.createGdprCase({
+          vendorId: detail.vendor.id,
+          requestType: dataRequestType,
+          recipientEmail,
+          sentMessageId: result.messageId,
+          subject: email.subject,
+          body: email.body,
+        });
+      } catch (err) {
+        const detail = err instanceof Error && err.message ? `: ${err.message}` : "";
+        setGdprSendError(`Request sent, but opening the case failed${detail}. Don't resend.`);
+        return;
+      }
+      setGdprSendOpen(false);
+      navigate(`/cases/${created.id}`);
+    } catch (err) {
+      setGdprSendError(errText(err, "Could not send the request."));
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Top bar */}
@@ -1107,6 +1157,15 @@ export default function AccountDetail(): JSX.Element {
             onClick={() => setActiveTab("emails")}
           >
             Emails
+          </button>
+
+          <button
+            role="tab"
+            aria-selected={activeTab === "cases"}
+            className={`tab ${activeTab === "cases" ? "tab-active" : ""}`}
+            onClick={() => setActiveTab("cases")}
+          >
+            Cases{vendorCases.length > 0 ? ` (${vendorCases.length})` : ""}
           </button>
 
           <div className={hasAnyActivity ? "" : "tooltip tooltip-bottom"} data-tip={hasAnyActivity ? undefined : "No activity yet"}>
@@ -1388,14 +1447,11 @@ export default function AccountDetail(): JSX.Element {
                     </div>
                     <div className="flex items-center gap-2">
                       <button
-                        className="btn btn-primary btn-sm gap-1"
-                        disabled={!recipientEmail}
-                        onClick={() => {
-                          const mailto = `mailto:${recipientEmail}?subject=${encodeURIComponent(email.subject)}&body=${encodeURIComponent(email.body)}`;
-                          window.api.openExternal(mailto);
-                        }}
+                        className="btn btn-primary btn-sm"
+                        disabled={!recipientEmail || actionLoading || !canSend}
+                        onClick={() => { setGdprSendError(undefined); setGdprSendOpen(true); }}
                       >
-                        Open email client <ExternalLink className="w-3.5 h-3.5" />
+                        Send request
                       </button>
                       <button
                         className="btn btn-neutral btn-sm gap-1"
@@ -1405,6 +1461,15 @@ export default function AccountDetail(): JSX.Element {
                         {copiedField === "body" ? "Copied!" : "Copy message"}
                       </button>
                     </div>
+                    {!canSend && (
+                      <p className="text-xs text-base-content/50">
+                        This account can&apos;t send email on its own.{" "}
+                        <button className="link" onClick={() => navigate("/settings")}>
+                          Connect an account with SMTP
+                        </button>{" "}
+                        to send from Paperweight, or copy the message and send it yourself.
+                      </p>
+                    )}
                   </>
                 );
               })()}
@@ -1430,6 +1495,26 @@ export default function AccountDetail(): JSX.Element {
           )}
         </div>
 
+        {/* Cases tab */}
+        <div className={`tab-content px-4 py-3 ${activeTab === "cases" ? "!block" : ""}`}>
+          {vendorCases.length === 0 ? (
+            <p className="text-sm text-base-content/50">
+              No cases yet. Send a data request from the Data requests tab to start tracking.
+            </p>
+          ) : (
+            <div className="space-y-2">
+              {vendorCases.map((c) => (
+                <CaseListRow
+                  key={c.id}
+                  item={c}
+                  primary={gdprRequestLabel(c.requestType)}
+                  onOpen={() => navigate(`/cases/${c.id}`)}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+
         {/* Activity tab */}
         <div className={`tab-content px-4 py-3 ${activeTab === "activity" ? "!block" : ""}`}>
           {!hasAnyActivity ? (
@@ -1450,19 +1535,32 @@ export default function AccountDetail(): JSX.Element {
                         className="grid grid-cols-[1fr_auto] items-center gap-4 py-2"
                       >
                         <div className="flex items-center gap-3 min-w-0">
-                          <span className="text-base-content/40 shrink-0">
+                          <span className="text-base-content/40 shrink-0 w-24">
                             {formatAbsoluteDate(entry.actionedAt)}
                           </span>
-                          <span
-                            className={`shrink-0 ${ACTION_COLORS[entry.actionType]}`}
-                          >
-                            {ACTION_LABELS[entry.actionType]}
-                          </span>
+                          {entry.caseId ? (
+                            <button
+                              className={`shrink-0 hover:underline ${ACTION_COLORS[entry.actionType]}`}
+                              onClick={() => navigate(`/cases/${entry.caseId}`)}
+                            >
+                              {activityEntryLabel(entry)}
+                            </button>
+                          ) : (
+                            <span
+                              className={`shrink-0 ${ACTION_COLORS[entry.actionType]}`}
+                            >
+                              {activityEntryLabel(entry)}
+                            </span>
+                          )}
                         </div>
                         <span className="text-base-content/40 text-right shrink-0">
-                          {entry.messageCount.toLocaleString()} emails
-                          {entry.sizeBytes > 0 &&
-                            ` · ${formatBytes(entry.sizeBytes)}`}
+                          {entry.messageCount > 0 && (
+                            <>
+                              {entry.messageCount.toLocaleString()} emails
+                              {entry.sizeBytes > 0 &&
+                                ` · ${formatBytes(entry.sizeBytes)}`}
+                            </>
+                          )}
                         </span>
                       </div>
                     ))}
@@ -1601,6 +1699,26 @@ export default function AccountDetail(): JSX.Element {
           ) : (
             <p>Move marketing emails from <strong>{displayName}</strong> to trash?</p>
           )}
+        </ActionModal>
+      )}
+
+      {/* GDPR send confirm modal */}
+      {gdprSendOpen && (
+        <ActionModal
+          isOpen
+          title={dataRequestType === "access" ? "Send access request" : "Send deletion request"}
+          confirmLabel="Send"
+          confirmVariant="primary"
+          onConfirm={handleGdprSend}
+          onCancel={() => { if (!actionLoading) setGdprSendOpen(false); }}
+          loading={actionLoading}
+          error={gdprSendError}
+        >
+          <p>
+            Paperweight will send this request from your account to{" "}
+            <strong>{recipientEmail}</strong> and open a case to track the
+            response deadlines.
+          </p>
         </ActionModal>
       )}
 

@@ -4,6 +4,7 @@ import type {
   AccountInfo,
   ChartTrend,
   DashboardStats,
+  GdprCaseSummary,
 } from "@shared/types";
 import { useLicense } from "../context/LicenseContext";
 import TrendChartCard from "../components/TrendChartCard";
@@ -31,17 +32,20 @@ export default function Dashboard(): JSX.Element {
   const [loading, setLoading] = useState(true);
   const [impactKey] = useState(0);
   const [account, setAccount] = useState<AccountInfo>();
+  const [dueCases, setDueCases] = useState<GdprCaseSummary[]>([]);
 
   const fetchData = async (silent = false): Promise<void> => {
     if (!silent) setLoading(true);
-    const [statsData, trendData, accountData] = await Promise.all([
+    const [statsData, trendData, accountData, activeCases] = await Promise.all([
       window.api.getDashboardStats(),
       window.api.getDashboardTrend(),
       window.api.getAccountInfo(),
+      window.api.queryGdprCases({ status: "active" }),
     ]);
     setStats(statsData);
     setTrend(trendData);
     setAccount(accountData);
+    setDueCases(activeCases.filter((c) => c.nextAction));
     setLoading(false);
   };
 
@@ -62,7 +66,10 @@ export default function Dashboard(): JSX.Element {
   }
 
   const hasActionItems =
-    stats.breachedCount > 0 || stats.activeSubscriptions > 0 || stats.highRiskUnreviewed > 0;
+    stats.breachedCount > 0 ||
+    stats.activeSubscriptions > 0 ||
+    stats.highRiskUnreviewed > 0 ||
+    dueCases.length > 0;
 
   return (
     <div className="space-y-6">
@@ -187,6 +194,18 @@ export default function Dashboard(): JSX.Element {
 
         {hasActionItems ? (
           <div className="space-y-2">
+            {dueCases.length > 0 && (
+              <div
+                className="flex items-center justify-between p-3 bg-base-200 rounded-lg border-l-4 border-case cursor-pointer hover:bg-base-300 transition-colors"
+                onClick={() => navigate("/cases", { state: { filter: "needs_attention" } })}
+              >
+                <span>
+                  {dueCases.length} data {dueCases.length !== 1 ? "requests need" : "request needs"} your attention
+                </span>
+                <ChevronRight className="w-5 h-5 text-base-content/50" aria-hidden="true" />
+              </div>
+            )}
+
             {stats.breachedCount > 0 && (
               <div
                 className="flex items-center justify-between p-3 bg-base-200 rounded-lg border-l-4 border-error cursor-pointer hover:bg-base-300 transition-colors"

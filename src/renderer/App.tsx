@@ -10,6 +10,8 @@ import Dashboard from "./pages/Dashboard";
 import Mail from "./pages/Mail";
 import Accounts from "./pages/Accounts";
 import AccountDetail from "./pages/AccountDetail";
+import Cases from "./pages/Cases";
+import CaseDetail from "./pages/CaseDetail";
 import Settings from "./pages/Settings";
 import Support from "./pages/Support";
 import Activity from "./pages/Activity";
@@ -97,6 +99,8 @@ export default function App(): JSX.Element {
           <Route path="mail" element={<Mail />} />
           <Route path="accounts" element={<Accounts />} />
           <Route path="accounts/:groupKey" element={<AccountDetail />} />
+          <Route path="cases" element={<Cases />} />
+          <Route path="cases/:caseId" element={<CaseDetail />} />
           <Route path="settings" element={<Settings />} />
           <Route path="support" element={<Support />} />
           <Route path="activity" element={<Activity />} />

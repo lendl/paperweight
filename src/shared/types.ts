@@ -23,10 +23,7 @@ export type MessageStatus =
   | "reported_spam"
   | "trashed";
 
-export type VendorStatus =
-  | "reviewed"
-  | "gdpr_requested"
-  | "gdpr_completed";
+export type VendorStatus = "reviewed";
 
 export type RiskLevel =
   | "high"     // Financial, healthcare, government
@@ -192,7 +189,17 @@ export interface RiskCounts {
   low: number;
 }
 
-export type ActionType = "unsubscribed" | "trashed" | "spam_reported";
+export type ActionType =
+  | "unsubscribed"
+  | "trashed"
+  | "spam_reported"
+  | "gdpr_request_sent"
+  | "reminder_sent"
+  | "followup_sent"
+  | "reply_received"
+  | "case_message_linked"
+  | "escalated"
+  | "case_closed";
 
 export interface ActivityEntry {
   id: number;
@@ -204,6 +211,65 @@ export interface ActivityEntry {
   messageCount: number;
   sizeBytes: number;
   actionedAt: number;
+  caseId?: number;
+  caseRequestType?: GdprRequestType;
+  caseOutcome?: GdprCaseOutcome;
+  messageId?: string;
+  subject?: string;
+  body?: string;
+}
+
+// GDPR cases
+
+export type GdprRequestType = "access" | "deletion";
+// Derived from closed_at, not stored: a case is closed when closed_at is set.
+export type GdprCaseStatus = "active" | "closed";
+export type GdprCaseOutcome = "resolved" | "escalated";
+export type GdprCaseAction = "reminder" | "followup" | "escalate";
+
+export interface GdprCase {
+  id: number;
+  vendorId: number;
+  requestType: GdprRequestType;
+  status: GdprCaseStatus;
+  outcome?: GdprCaseOutcome;
+  recipientEmail?: string;
+  sentMessageId?: string;
+  openedAt: number;
+  closedAt?: number;
+}
+
+export interface GdprCaseSummary extends GdprCase {
+  vendorName: string;
+  vendorDomain?: string;
+  nextAction?: GdprCaseAction;
+}
+
+export interface GdprCaseDetail extends GdprCaseSummary {
+  events: ActivityEntry[];
+}
+
+export interface CreateGdprCaseInput {
+  vendorId: number;
+  requestType: GdprRequestType;
+  recipientEmail?: string;
+  sentMessageId?: string;
+  openedAt?: number;
+  subject?: string;
+  body?: string;
+}
+
+export interface GdprCaseEventInput {
+  messageId?: string;
+  subject?: string;
+  body?: string;
+}
+
+export interface GdprCaseReplies {
+  threadMatches: Message[];
+  otherReplies: Message[];
+  /** Message IDs the user manually linked to this case. */
+  linkedMessageIds: string[];
 }
 
 export interface ChartTrend {

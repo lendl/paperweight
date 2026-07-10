@@ -480,15 +480,27 @@ export function createGmailProvider(): EmailProvider {
       }
     },
 
-    async sendEmail(to: string, subject: string, body: string): Promise<void> {
+    async sendEmail(to: string, subject: string, body: string, inReplyTo?: string): Promise<string | undefined> {
       const token = await getValidAccessToken();
       const from = await fetchGmailProfileEmail(token);
       // Gmail rejects messages with an empty From; fail loudly so the renderer
       // gets a clear error instead of a confusing "header invalid" from the API.
       if (!from) throw new Error("Could not resolve sender address from Gmail profile");
-      const raw = buildRfc822Message(from, to, subject, body);
+      const raw = buildRfc822Message(from, to, subject, body, inReplyTo);
       const encoded = Buffer.from(raw, "utf-8").toString("base64url");
-      await gmailApiPost("/messages/send", { raw: encoded });
+      const sent = (await gmailApiPost("/messages/send", { raw: encoded })) as { id?: string };
+      // Read the Message-ID back from the sent message — Gmail assigns it
+      // server-side, so what we sent is not what went out.
+      if (!sent?.id) return undefined;
+      try {
+        const meta = (await gmailApiFetch(`/messages/${sent.id}`, {
+          format: "metadata",
+          metadataHeaders: "Message-ID",
+        })) as { payload?: { headers?: Array<{ name: string; value: string }> } };
+        return meta.payload?.headers?.find((h) => h.name.toLowerCase() === "message-id")?.value;
+      } catch {
+        return undefined;
+      }
     },
 
     // --- Removal tracking (History API) ---
