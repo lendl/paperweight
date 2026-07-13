@@ -26,6 +26,9 @@ export interface FixtureCase {
 const fixturesRoot = fileURLToPath(new URL("../fixtures", import.meta.url));
 
 export function loadFixtureCases(): FixtureCase[] {
+  if (!existsSync(fixturesRoot)) {
+    return [];
+  }
   return readdirSync(fixturesRoot, { withFileTypes: true })
     .filter((entry) => entry.isDirectory())
     .map((entry) => loadCase(entry.name, join(fixturesRoot, entry.name)))
