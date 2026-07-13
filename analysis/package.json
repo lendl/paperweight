@@ -1,0 +1,37 @@
+{
+  "name": "@paperweight/analysis",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Local, deterministic message analysis engine",
+  "license": "MIT",
+  "author": "wslyvh",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "analyze": "tsx scripts/analyze.ts",
+    "new-fixture": "tsx scripts/new-fixture.ts"
+  },
+  "dependencies": {
+    "franc": "^6.2.0",
+    "htmlparser2": "^12.0.0",
+    "postal-mime": "^2.7.5"
+  },
+  "devDependencies": {
+    "@types/node": "^26.1.1",
+    "tsx": "^4.23.1",
+    "typescript": "^7.0.2",
+    "vite": "^8.1.4",
+    "vitest": "^4.1.10"
+  }
+}

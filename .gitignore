@@ -19,3 +19,10 @@ coverage/
 ./docs/
 *.md
 !website/src/content/**
+
+# analysis package: real mail samples never enter git; docs do
+/analysis/samples/
+!analysis/**/*.md
+
+# TEMP: fixtures land with the finished pipeline; remove this line to commit them
+/analysis/fixtures/
