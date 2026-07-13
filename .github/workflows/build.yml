@@ -14,7 +14,7 @@ jobs:
   verify:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Verify tag/version matches package.json
         run: |
@@ -29,9 +29,9 @@ jobs:
           echo "Version OK: $ACTUAL"
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version: 24
           cache: yarn
 
       - name: Install dependencies
@@ -64,12 +64,12 @@ jobs:
       APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version: 24
           cache: "yarn"
 
       - name: Install dependencies
@@ -101,12 +101,12 @@ jobs:
       MICROSOFT_CLIENT_ID: ${{ secrets.MICROSOFT_CLIENT_ID }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version: 24
           cache: "yarn"
 
       - name: Install dependencies
@@ -159,12 +159,12 @@ jobs:
       MICROSOFT_CLIENT_ID: ${{ secrets.MICROSOFT_CLIENT_ID }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version: 24
           cache: "yarn"
 
       - name: Install dependencies
@@ -199,7 +199,7 @@ jobs:
           path: artifacts
 
       - name: Create draft release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ github.event.inputs.version || github.ref_name }}
           draft: true
