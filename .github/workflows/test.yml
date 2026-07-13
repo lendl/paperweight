@@ -21,6 +21,10 @@ jobs:
       - name: Install dependencies
         run: yarn install --immutable
 
+      - name: Install analysis dependencies
+        run: yarn install --immutable
+        working-directory: analysis
+
       - name: Install xvfb
         run: sudo apt-get update && sudo apt-get install -y xvfb
 
