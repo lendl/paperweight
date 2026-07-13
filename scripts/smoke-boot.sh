@@ -47,7 +47,7 @@ fi
 case "$PROFILE" in
   runtime)
     echo "Generating runtime account fixture..."
-    ELECTRON_RUN_AS_NODE=1 "$ELECTRON" --import tsx scripts/generate-smoke-fixture.ts "$USER_DATA_DIR"
+    ELECTRON_RUN_AS_NODE=1 TSX_TSCONFIG_PATH=tsconfig.node.json "$ELECTRON" --import tsx scripts/generate-smoke-fixture.ts "$USER_DATA_DIR"
     ;;
   stored)
     FIXTURE_DIR="$ROOT/test/fixtures/smoke-account"
