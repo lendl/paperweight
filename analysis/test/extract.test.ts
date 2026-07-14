@@ -89,11 +89,15 @@ describe("extractHeaderFacts", () => {
 });
 
 describe("selectBody", () => {
-  it("prefers the text part", () => {
-    const body = selectBody({ headers: {}, text: "plain", html: "<p>html</p>" });
+  it("prefers the text part but keeps links from the html part", () => {
+    const body = selectBody({
+      headers: {},
+      text: "plain",
+      html: '<p>zie <a href="https://x.example/u">afmelden</a></p>',
+    });
     expect(body.source).toBe("text");
     expect(body.text).toBe("plain");
-    expect(body.links).toEqual([]);
+    expect(body.links).toEqual([{ href: "https://x.example/u", text: "afmelden" }]);
   });
 
   it("falls back to html converted to text", () => {

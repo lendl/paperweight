@@ -1,3 +1,6 @@
+import { textTypeSignals } from "./classify/text-signals";
+import { classifyType } from "./classify/type";
+import { resolveUnsubscribe } from "./classify/unsubscribe";
 import { extract } from "./extract/body";
 import { detectLanguage } from "./extract/language";
 import type { Analysis, AnalyzeOptions, RawMessage, TextAnalysis } from "./types";
@@ -9,21 +12,25 @@ export { parseEml } from "./parse/eml";
 // engine (the caller re-scans when this changes).
 export const ENGINE_VERSION = "0.1.0";
 
-// Findings, text signals, and classification land step by step per
-// ENGINE_DESIGN.md §9; empty results here are honest, not placeholders.
+// Findings land in step 4 per ENGINE_DESIGN.md §9; the empty array is honest,
+// not a placeholder.
 
 export function analyzeText(text: string, opts?: AnalyzeOptions): TextAnalysis {
-  return { lang: detectLanguage(text), findings: [], textSignals: [] };
+  return { lang: detectLanguage(text), findings: [] };
 }
 
 export function analyzeMessage(msg: RawMessage, opts?: AnalyzeOptions): Analysis {
   const extracted = extract(msg);
   const textAnalysis = analyzeText(extracted.body.text, opts);
-  return {
+  const unsubscribe = resolveUnsubscribe(extracted.header, extracted.body);
+  const type = classifyType(extracted, textTypeSignals(extracted.body.text), unsubscribe);
+  const analysis: Analysis = {
     ...textAnalysis,
-    type: "unknown",
-    typeConfidence: 0,
-    typeSignals: [],
+    type: type.type,
+    typeConfidence: type.confidence,
+    typeSignals: type.signals,
     version: ENGINE_VERSION,
   };
+  if (unsubscribe) analysis.unsubscribe = unsubscribe;
+  return analysis;
 }

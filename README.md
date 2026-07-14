@@ -66,3 +66,11 @@ If you're building from source you need to add your own OAuth credentials. Copy 
 ## Contributing
 
 Feedback, bug reports, and PRs are welcome.
+
+**Language lexicons** — Paperweight's analysis engine classifies mail
+(purchases, updates, promotions) and finds unsubscribe links using
+per-language phrase lexicons. English and Dutch are curated; other languages
+need native speakers. Adding or improving a language is a single-file data
+contribution — no engine knowledge required. See
+[`analysis/src/data/lexicons/README.md`](analysis/src/data/lexicons/README.md)
+for the rules.

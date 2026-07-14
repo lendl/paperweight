@@ -6,7 +6,6 @@ function baseAnalysis(partial: Partial<Analysis>): Analysis {
   return {
     lang: "und",
     findings: [],
-    textSignals: [],
     type: "unknown",
     typeConfidence: 0,
     typeSignals: [],

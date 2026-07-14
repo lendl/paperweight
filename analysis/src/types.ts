@@ -9,12 +9,20 @@ export interface RawMessage {
 export interface AnalyzeOptions {
   ownIdentifiers?: { emails?: string[] };
   caseContext?: { vendorDomain: string };
-  locale?: string;
+  locale?: string; // region hint for phone/postcode detection (step 4)
 }
 
-// 'unknown' is reserved for empty/unparseable input; the classifier otherwise
-// always emits its best guess with a confidence.
-export type MessageType = "bulk" | "transactional" | "order" | "personal" | "unknown";
+// Gmail-inspired, content-intent only (the unsubscribe mechanism is its own
+// field). 'unknown' is reserved for empty/unparseable input; the classifier
+// otherwise always emits its best guess with a confidence.
+// purchase  — transaction records: orders, receipts, invoices, payments,
+//             refunds, booking/reservation confirmations
+// update    — account/service lifecycle: welcome, verification, security,
+//             reminders, service notifications
+// promotion — marketing, newsletters, offers
+// social    — social network notifications
+// personal  — 1:1 human mail
+export type MessageType = "personal" | "purchase" | "update" | "promotion" | "social" | "unknown";
 
 export type UnsubscribeMethod = "rfc8058" | "list-unsubscribe" | "footer";
 
@@ -53,7 +61,6 @@ export interface Finding {
 export interface TextAnalysis {
   lang: string; // ISO 639-3 straight from detection ("eng", "nld"); "und" = undetermined
   findings: Finding[];
-  textSignals: Signal[];
 }
 
 export interface GdprReplyResult {

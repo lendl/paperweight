@@ -28,9 +28,12 @@ export function selectBody(msg: RawMessage): ExtractedBody {
   return pickBody(msg, msg.html !== undefined ? htmlToText(msg.html) : undefined);
 }
 
+// Links are structural facts from the html part and carry over even when the
+// text part wins body selection (multipart mail: the unsubscribe footer link
+// only exists in the html part).
 function pickBody(msg: RawMessage, converted: HtmlToTextResult | undefined): ExtractedBody {
   if (msg.text !== undefined && msg.text.trim() !== "") {
-    return { text: msg.text, source: "text", links: [] };
+    return { text: msg.text, source: "text", links: converted?.links ?? [] };
   }
   if (converted) {
     return { text: converted.text, source: "html", links: converted.links };
