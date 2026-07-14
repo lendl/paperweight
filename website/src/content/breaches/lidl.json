@@ -1,0 +1,57 @@
+{
+  "slug": "lidl",
+  "generated_at": "2026-07-14T15:42:52.812Z",
+  "logoUrl": "/logos/Lidl.png",
+  "breach": {
+    "slug": "lidl",
+    "company_name": "Lidl Digital International GmbH & Co. KG",
+    "runs": [
+      "Lidl Online-Shop (lidl-shop.de)"
+    ],
+    "categories": [
+      "shopping"
+    ],
+    "address": "Stiftsbergstraße 1\n74172 Neckarsulm\nDeutschland",
+    "web": "https://www.lidl.de/",
+    "email": "datenschutz@lidl-shop.de",
+    "phone": "+49 800 43 53 361",
+    "suggested_transport_medium": "email",
+    "name": "Lidl",
+    "title": "Lidl",
+    "domain": "lidl.de",
+    "breach_date": "2026-07-13",
+    "added_date": "2026-07-13T18:00:00Z",
+    "modified_date": "2026-07-14T00:00:00Z",
+    "pwn_count": 0,
+    "description": "In July 2026, German discount supermarket chain <a href=\"https://www.lidl.de\" target=\"_blank\" rel=\"noopener\">Lidl</a> disclosed that customer data from its online shop had been stolen following a hack at one of its IT service providers. According to <a href=\"https://www.bleepingcomputer.com/news/security/lidl-discloses-online-shop-breach-after-service-provider-hack/\" target=\"_blank\" rel=\"noopener\">reporting by BleepingComputer</a>, unknown attackers briefly gained access to a separately stored file of customer data and exfiltrated part of it. The exposed information covers salutation, first and last name, telephone number, email address, date of birth and customer number for online-shop customers in Germany, Belgium and the Netherlands. Lidl stated that no passwords, billing or delivery addresses, bank details or other payment information were affected, and that its online shop systems themselves were not compromised. The company notified the Dutch (Autoriteit Persoonsgegevens) and Belgian data protection authorities, and the affected service provider filed a police report and engaged forensic investigators. The number of affected customers was not disclosed.",
+    "data_classes": [
+      "Customer numbers",
+      "Dates of birth",
+      "Email addresses",
+      "Names",
+      "Phone numbers",
+      "Salutations"
+    ],
+    "is_verified": true,
+    "is_sensitive": false,
+    "source": {
+      "name": "BleepingComputer",
+      "url": "https://www.bleepingcomputer.com/news/security/lidl-discloses-online-shop-breach-after-service-provider-hack/"
+    }
+  },
+  "enforcement": {
+    "records": [],
+    "total_fines": 0
+  },
+  "content": {
+    "aboutCompany": "Lidl Digital International GmbH & Co. KG is part of Lidl, a German discount supermarket chain that operates internationally, including in Germany, Belgium, and the Netherlands.",
+    "keyTakeaways": [
+      "On July 13, 2026, customer numbers, dates of birth, email addresses, names, phone numbers, and salutations of an undisclosed number of online-shop customers were exposed due to a hack at an IT service provider.",
+      "This incident is part of a pattern of data exposures affecting the retail sector in 2026.",
+      "Affected individuals should be vigilant about phishing attempts and other scams that could use their exposed personal details."
+    ],
+    "incidentAndExposure": "Lidl Digital International GmbH & Co. KG confirmed that customer data from its online shop was stolen. The exposed information includes customer numbers, dates of birth, email addresses, names, phone numbers, and salutations. This data belonged to online-shop customers in Germany, Belgium, and the Netherlands. The company stated that no passwords, billing or delivery addresses, bank details, or other payment information were affected. The number of affected customers was not disclosed. The company has publicly acknowledged the incident.",
+    "timelineAndCause": "The data exposure occurred on July 13, 2026, and was disclosed on the same day. The incident happened due to a hack at one of Lidl's IT service providers. Attackers briefly gained access to a separately stored file of customer data and exfiltrated part of it. Lidl's online shop systems themselves were not compromised.",
+    "nextSteps": "The exposed data, including names, email addresses, phone numbers, and dates of birth, could be used by attackers for targeted phishing emails, scam calls, or identity theft attempts. You should be suspicious of any unsolicited communications that appear to come from Lidl or other companies, especially if they ask for additional personal information or login credentials. Do not click on suspicious links or download attachments from unknown senders. Be wary of calls asking for personal details or financial information. Lidl has not provided specific remediation guidance such as a fraud hotline or credit monitoring offers, but they did notify data protection authorities in the Netherlands and Belgium, and the affected service provider filed a police report and engaged forensic investigators."
+  }
+}

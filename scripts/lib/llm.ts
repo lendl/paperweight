@@ -158,7 +158,7 @@ export async function generateBreachContentSections(
 
 - timelineAndCause (1-2 paragraphs: when the breach occurred and when it was disclosed; how it happened if stated in the sources. Name an attacker or campaign ONLY if an "Attribution:" line is present in the context. Otherwise do not speculate.)
 
-- nextSteps (1-2 paragraphs: concrete actions for affected people. If the grounding sources include the company's own remediation guidance — password reset instructions, fraud hotline, credit monitoring offer, etc. — repeat it specifically. Otherwise recommend general measures appropriate to the specific data types exposed.)
+- nextSteps (1-2 tight paragraphs, no filler: the concrete scams the exposed data enables for THIS company, then what the affected person does about them. If the grounding sources include the company's own remediation guidance — password reset instructions, fraud hotline, credit monitoring offer, etc. — repeat it specifically. Otherwise stay specific to the exposed data types; do not pad to length.)
 
 - enforcementNarrative (string, optional, 1 short paragraph; include only when GDPR enforcement fines are provided in the context)
 
@@ -166,6 +166,8 @@ Rules:
 - Never invent attribution, attack vectors, record counts, affected geographies, or company responses.
 - Do not include markdown headings, bullets, or links inside any field value.
 - Write in plain language. Avoid "threat actor", "malicious actor", "compromise" as jargon. Prefer "attacker", "exposed", "stolen".
+- In nextSteps, never tell the reader to report or forward suspicious messages to the breached company, or to "report to the authorities" — the reader is the victim, not the company's incident-response team.
+- Do not pad nextSteps with generic security hygiene (strong/unique passwords, two-factor authentication, credit freezes) unless the specific exposed data makes it materially relevant. Cut anything that would apply to any breach.
 
 Context:
 ${buildContext(breach, enforcement, signals, sources)}`;
