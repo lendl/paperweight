@@ -19,14 +19,28 @@ import { DEFAULT_CATEGORY, DEFAULT_RISK } from "@shared/types";
 import { dbLog } from "../utils/log";
 
 function toVendor(raw: Record<string, unknown>): Vendor {
+  const accountEmail =
+    typeof raw.account_email === "string" && raw.account_email.trim()
+      ? raw.account_email.trim()
+      : undefined;
   return {
-    ...(raw as Omit<Vendor, "has_marketing" | "has_account" | "has_rfc8058" | "has_mailto_unsub" | "has_orders" | "risk_level">),
+    ...(raw as Omit<
+      Vendor,
+      | "has_marketing"
+      | "has_account"
+      | "has_rfc8058"
+      | "has_mailto_unsub"
+      | "has_orders"
+      | "risk_level"
+      | "account_email"
+    >),
     has_marketing: !!raw.has_marketing,
     has_account: !!raw.has_account,
     has_rfc8058: !!raw.has_rfc8058,
     has_mailto_unsub: !!raw.has_mailto_unsub,
     has_orders: !!raw.has_orders,
     risk_level: ((raw.computed_risk ?? raw.risk_level) as RiskLevel | undefined),
+    account_email: accountEmail,
   };
 }
 
@@ -771,12 +785,26 @@ export function queryVendors(
   return { vendors: enriched, total };
 }
 
-export function updateVendor(id: number, updates: { status?: VendorStatus }): void {
+export function updateVendor(
+  id: number,
+  updates: { status?: VendorStatus; account_email?: string },
+): void {
   const d = getDb();
-  d.prepare("UPDATE vendors SET status = ? WHERE id = ?").run(
-    updates.status ?? null,
-    id
-  );
+  const sets: string[] = [];
+  const params: unknown[] = [];
+  if ("status" in updates) {
+    sets.push("status = ?");
+    params.push(updates.status ?? null);
+  }
+  if ("account_email" in updates) {
+    sets.push("account_email = ?");
+    const email = updates.account_email?.trim();
+    params.push(email || null);
+  }
+  if (sets.length === 0) return;
+  sets.push("updated_at = strftime('%s', 'now')");
+  params.push(id);
+  d.prepare(`UPDATE vendors SET ${sets.join(", ")} WHERE id = ?`).run(...params);
 }
 
 export function getVendorById(id: number): Vendor | undefined {

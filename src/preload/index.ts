@@ -71,6 +71,9 @@ const api: ElectronAPI = {
   markVendorReviewed: (vendorId, reviewed) =>
     ipcRenderer.invoke(IPC.markVendorReviewed, vendorId, reviewed),
 
+  setVendorAccountEmail: (vendorId, email) =>
+    ipcRenderer.invoke(IPC.setVendorAccountEmail, vendorId, email),
+
   addWhitelistEntry: (value) =>
     ipcRenderer.invoke(IPC.addWhitelistEntry, value),
 

@@ -55,6 +55,7 @@ export const IPC = {
   markUnsubscribed: "mark-unsubscribed",
   markVendorUnsubscribed: "mark-vendor-unsubscribed",
   markVendorReviewed: "mark-vendor-reviewed",
+  setVendorAccountEmail: "set-vendor-account-email",
   addWhitelistEntry: "add-whitelist-entry",
   removeWhitelistEntry: "remove-whitelist-entry",
   getWhitelistEntries: "get-whitelist-entries",
@@ -132,6 +133,7 @@ export interface ElectronAPI {
   markUnsubscribed: (email: string) => Promise<void>;
   markVendorUnsubscribed: (vendorId: number) => Promise<void>;
   markVendorReviewed: (vendorId: number, reviewed?: boolean) => Promise<void>;
+  setVendorAccountEmail: (vendorId: number, email: string) => Promise<void>;
   addWhitelistEntry: (value: string) => Promise<void>;
   removeWhitelistEntry: (value: string) => Promise<void>;
   getWhitelistEntries: () => Promise<WhitelistEntry[]>;

@@ -58,6 +58,7 @@ interface CaseRow {
   sent_message_id: string | null;
   opened_at: number;
   closed_at: number | null;
+  account_email?: string | null;
 }
 
 interface EventRow {
@@ -295,7 +296,8 @@ export function getGdprCaseById(id: number): GdprCaseDetail | undefined {
   const d = getDb();
   const row = d
     .prepare(
-      `SELECT c.*, COALESCE(NULLIF(v.name, ''), v.root_domain, 'Unknown') as vendor_name, v.root_domain as vendor_domain
+      `SELECT c.*, COALESCE(NULLIF(v.name, ''), v.root_domain, 'Unknown') as vendor_name,
+              v.root_domain as vendor_domain, v.account_email as account_email
        FROM gdpr_cases c JOIN vendors v ON v.id = c.vendor_id
        WHERE c.id = ?`,
     )
@@ -314,6 +316,7 @@ export function getGdprCaseById(id: number): GdprCaseDetail | undefined {
     ...mapCase(row),
     vendorName: row.vendor_name,
     vendorDomain: row.vendor_domain ?? undefined,
+    accountEmail: row.account_email ?? undefined,
     nextAction: row.closed_at ? undefined : deriveNextAction(row.opened_at, events),
     events,
   };
@@ -333,7 +336,8 @@ export function queryGdprCases(filter?: { status?: GdprCaseStatus; vendorId?: nu
   const where = conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
   const rows = d
     .prepare(
-      `SELECT c.*, COALESCE(NULLIF(v.name, ''), v.root_domain, 'Unknown') as vendor_name, v.root_domain as vendor_domain
+      `SELECT c.*, COALESCE(NULLIF(v.name, ''), v.root_domain, 'Unknown') as vendor_name,
+              v.root_domain as vendor_domain, v.account_email as account_email
        FROM gdpr_cases c JOIN vendors v ON v.id = c.vendor_id
        ${where} ORDER BY c.opened_at DESC`,
     )
@@ -364,6 +368,7 @@ export function queryGdprCases(filter?: { status?: GdprCaseStatus; vendorId?: nu
       ...mapCase(row),
       vendorName: row.vendor_name,
       vendorDomain: row.vendor_domain ?? undefined,
+      accountEmail: row.account_email ?? undefined,
       nextAction,
     };
   });

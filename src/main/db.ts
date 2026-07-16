@@ -10,7 +10,7 @@ import { join, basename } from "path";
 import { existsSync, unlinkSync } from "fs";
 import { dbLog } from "./utils/log";
 import { emailToFileKey } from "./credentials";
-import { migrateActionLog } from "./migrations";
+import { migrateActionLog, migrateVendors } from "./migrations";
 
 let db: Database.Database | undefined;
 
@@ -119,6 +119,7 @@ function initSchema(d: Database.Database) {
       has_marketing INTEGER DEFAULT 0,
       has_account INTEGER DEFAULT 0,
       status TEXT,
+      account_email TEXT,
       created_at INTEGER DEFAULT (strftime('%s', 'now')),
       updated_at INTEGER DEFAULT (strftime('%s', 'now'))
     );
@@ -212,6 +213,7 @@ function initSchema(d: Database.Database) {
   `);
 
   migrateActionLog(d);
+  migrateVendors(d);
 
   d.prepare("INSERT OR IGNORE INTO sync_state (id) VALUES (1)").run();
 }

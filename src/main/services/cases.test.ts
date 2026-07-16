@@ -9,6 +9,7 @@ jest.mock("../utils/log", () => ({
 jest.mock("../credentials", () => ({ emailToFileKey: jest.fn() }));
 
 import { getDb, initDb, reconnectDb } from "../db";
+import { migrateVendors } from "../migrations";
 import {
   closeGdprCase,
   createGdprCase,
@@ -59,6 +60,21 @@ describe("createGdprCase / getGdprCaseById", () => {
     expect(detail!.events[0].actionType).toBe("gdpr_request_sent");
     expect(detail!.events[0].subject).toBe("Personal Data Deletion Request");
     expect(detail!.events[0].body).toBe("Please delete my data.");
+  });
+
+  it("exposes vendors.account_email on the case detail", () => {
+    const vendorId = insertVendor("alias-shop.com");
+    getDb()
+      .prepare("UPDATE vendors SET account_email = ? WHERE id = ?")
+      .run("shop-alias@passmail.net", vendorId);
+    const created = createGdprCase({
+      vendorId,
+      requestType: "deletion",
+      recipientEmail: "privacy@alias-shop.com",
+      subject: "s",
+      body: "b",
+    });
+    expect(getGdprCaseById(created.id)!.accountEmail).toBe("shop-alias@passmail.net");
   });
 });
 
@@ -341,6 +357,27 @@ describe("reopenGdprCase cleanup", () => {
       (e) => e.actionType === "case_closed" || e.actionType === "escalated",
     );
     expect(terminal).toHaveLength(0);
+  });
+});
+
+describe("vendors account_email migration", () => {
+  it("adds account_email to a vendors table created without it", () => {
+    const db = new Database(":memory:");
+    db.exec(`
+      CREATE TABLE vendors (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        root_domain TEXT NOT NULL,
+        name TEXT NOT NULL
+      );
+    `);
+
+    migrateVendors(db);
+
+    const vendorCols = (db.pragma("table_info(vendors)") as Array<{ name: string }>).map(
+      (c) => c.name,
+    );
+    expect(vendorCols).toContain("account_email");
+    db.close();
   });
 });
 

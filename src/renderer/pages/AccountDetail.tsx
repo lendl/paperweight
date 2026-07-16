@@ -30,6 +30,7 @@ import {
   ChevronRight,
   Clipboard,
   ExternalLink,
+  Info,
 } from "lucide-react";
 import ActionModal from "../components/ActionModal";
 import { CaseListRow } from "../components/CaseListRow";
@@ -263,6 +264,7 @@ export default function AccountDetail(): JSX.Element {
   const [accountIdentifier, setAccountIdentifier] = useState("");
   const [emailLanguage, setEmailLanguage] = useState("en");
   const [userName, setUserName] = useState("");
+  const [requestEmail, setRequestEmail] = useState("");
   const [recipientEmail, setRecipientEmail] = useState("");
   const [pendingUnsub, setPendingUnsub] = useState<UnsubscribeEntry | null>(null);
   const [unsubCheck, setUnsubCheck] = useState<{ entry: UnsubscribeEntry; trashAlso: boolean } | null>(null);
@@ -293,6 +295,7 @@ export default function AccountDetail(): JSX.Element {
     if (!groupKey) return;
     setLoading(true);
     setAccountIdentifier("");
+    setRequestEmail("");
     setCopiedField(null);
     setDoneIds(new Set());
     setActiveItemId(null);
@@ -320,6 +323,7 @@ export default function AccountDetail(): JSX.Element {
           d.vendor.breachInfo?.some((b) => b.likelyAffected) ?? false,
         );
         if (settings.userName) setUserName(settings.userName);
+        setRequestEmail(d.vendor.account_email ?? d.user_email ?? "");
         const candidate = pickContactEmail(d.company, d.senders);
         setRecipientEmail(
           candidate && !isNoReplyEmail(candidate) ? candidate : "",
@@ -455,8 +459,14 @@ export default function AccountDetail(): JSX.Element {
     riskInfo?.description ?? "Not enough data to determine a risk level";
 
   const contactEmail = pickContactEmail(company, senders);
-  const deletionEmail = user_email ? buildDeletionEmail(user_email, accountIdentifier || undefined, emailLanguage, userName || undefined) : undefined;
-  const accessEmail = user_email ? buildAccessEmail(user_email, accountIdentifier || undefined, emailLanguage, userName || undefined) : undefined;
+  const requesterEmail = requestEmail.trim();
+  const canBuildRequest = requesterEmail.includes("@");
+  const deletionEmail = canBuildRequest
+    ? buildDeletionEmail(requesterEmail, accountIdentifier || undefined, emailLanguage, userName || undefined)
+    : undefined;
+  const accessEmail = canBuildRequest
+    ? buildAccessEmail(requesterEmail, accountIdentifier || undefined, emailLanguage, userName || undefined)
+    : undefined;
 
   const domainUrl = company?.web
     ? company.web
@@ -853,12 +863,28 @@ export default function AccountDetail(): JSX.Element {
     }
   };
 
+  const persistAccountEmail = async (): Promise<void> => {
+    if (!detail || !canBuildRequest) return;
+    if ((detail.vendor.account_email ?? "") === requesterEmail) return;
+    await window.api.setVendorAccountEmail(detail.vendor.id, requesterEmail);
+    setDetail({
+      ...detail,
+      vendor: { ...detail.vendor, account_email: requesterEmail },
+    });
+  };
+
   const handleGdprSend = async (): Promise<void> => {
     const email = dataRequestType === "access" ? accessEmail : deletionEmail;
-    if (!email || !recipientEmail || !detail) return;
+    if (!email || !recipientEmail || !detail || !canBuildRequest) return;
     setActionLoading(true);
     setGdprSendError(undefined);
     try {
+      try {
+        await persistAccountEmail();
+      } catch (err) {
+        setGdprSendError(errText(err, "Could not save the account email."));
+        return;
+      }
       const result = await window.api.sendEmail(recipientEmail, email.subject, email.body);
       if (!result.success) {
         setGdprSendError(result.error ?? "Could not send the request.");
@@ -1342,7 +1368,7 @@ export default function AccountDetail(): JSX.Element {
             </>
           )}
 
-          {(deletionEmail || accessEmail) ? (
+          {(user_email || canBuildRequest) ? (
             <>
               {!company && (
                 <p className="text-base-content/50 text-xs">
@@ -1351,7 +1377,7 @@ export default function AccountDetail(): JSX.Element {
               )}
               <div className="space-y-2">
                 <div className="flex items-center gap-3">
-                  <label className="text-xs text-base-content/50 uppercase shrink-0 w-20">Language</label>
+                  <label className="text-xs text-base-content/50 uppercase shrink-0 w-28">Language</label>
                   <select
                     className="select select-bordered select-sm"
                     value={emailLanguage}
@@ -1363,7 +1389,7 @@ export default function AccountDetail(): JSX.Element {
                   </select>
                 </div>
                 <div className="flex items-center gap-3">
-                  <label className="text-xs text-base-content/50 uppercase shrink-0 w-20">Purpose</label>
+                  <label className="text-xs text-base-content/50 uppercase shrink-0 w-28">Purpose</label>
                   <select
                     className="select select-bordered select-sm"
                     value={dataRequestType}
@@ -1374,7 +1400,24 @@ export default function AccountDetail(): JSX.Element {
                   </select>
                 </div>
                 <div className="flex items-center gap-3">
-                  <label className="text-xs text-base-content/50 uppercase shrink-0 w-20">Name</label>
+                  <label className="text-xs text-base-content/50 uppercase shrink-0 w-28">Account email</label>
+                  <input
+                    type="email"
+                    className="input input-bordered input-sm"
+                    placeholder="you@example.com"
+                    value={requestEmail}
+                    onChange={(e) => { setRequestEmail(e.target.value); setCopiedField(null); }}
+                    onBlur={() => { void persistAccountEmail().catch(() => undefined); }}
+                  />
+                  <span
+                    className="tooltip tooltip-top tooltip-left shrink-0 text-base-content/40"
+                    data-tip="The address this company knows you by — e.g. a hide-my-email alias. Note that you will still send from your connected account."
+                  >
+                    <Info className="w-3.5 h-3.5" aria-label="About account email" />
+                  </span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <label className="text-xs text-base-content/50 uppercase shrink-0 w-28">Name</label>
                   <input
                     type="text"
                     className="input input-bordered input-sm"
@@ -1386,7 +1429,7 @@ export default function AccountDetail(): JSX.Element {
                   <span className="text-xs text-base-content/40 shrink-0">(optional)</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <label className="text-xs text-base-content/50 uppercase shrink-0 w-20">Account ID</label>
+                  <label className="text-xs text-base-content/50 uppercase shrink-0 w-28">Account ID</label>
                   <input
                     type="text"
                     className="input input-bordered input-sm"
@@ -1448,7 +1491,7 @@ export default function AccountDetail(): JSX.Element {
                     <div className="flex items-center gap-2">
                       <button
                         className="btn btn-primary btn-sm"
-                        disabled={!recipientEmail || actionLoading || !canSend}
+                        disabled={!recipientEmail || !canBuildRequest || actionLoading || !canSend}
                         onClick={() => { setGdprSendError(undefined); setGdprSendOpen(true); }}
                       >
                         Send request

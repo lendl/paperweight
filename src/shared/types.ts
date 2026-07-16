@@ -109,6 +109,8 @@ export interface Vendor {
   has_mailto_unsub?: boolean;
   has_orders?: boolean;
   status?: VendorStatus;
+  /** Email this company knows the user by (e.g. hide-my-email alias). */
+  account_email?: string;
   breachInfo?: BreachInfo[];
 }
 
@@ -242,6 +244,8 @@ export interface GdprCase {
 export interface GdprCaseSummary extends GdprCase {
   vendorName: string;
   vendorDomain?: string;
+  /** From vendors.account_email — identity for reminder/follow-up copy. */
+  accountEmail?: string;
   nextAction?: GdprCaseAction;
 }
 

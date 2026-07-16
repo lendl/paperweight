@@ -369,7 +369,17 @@ export default function CaseDetail(): JSX.Element {
     );
   }
 
-  const { requestType, vendorName, vendorDomain, openedAt, status, outcome, nextAction, events } = caseDetail;
+  const {
+    requestType,
+    vendorName,
+    vendorDomain,
+    openedAt,
+    status,
+    outcome,
+    nextAction,
+    events,
+    accountEmail: vendorAccountEmail,
+  } = caseDetail;
   const isActive = status === "active";
   const requestEvent = [...events].reverse().find((e) => e.actionType === "gdpr_request_sent");
   const hasCaseResponse =
@@ -395,7 +405,14 @@ export default function CaseDetail(): JSX.Element {
 
   const buildActionEmail = (action: "reminder" | "followup") => {
     const build = action === "reminder" ? buildReminderEmail : buildFollowupEmail;
-    return build(requestEvent?.subject, requestType, openedAt, accountEmail, emailLanguage, userName || undefined);
+    return build(
+      requestEvent?.subject,
+      requestType,
+      openedAt,
+      vendorAccountEmail || accountEmail,
+      emailLanguage,
+      userName || undefined,
+    );
   };
   // Built once per render (not 3×) and reused by the modal preview, the copy
   // button, and handleSend so what we send is exactly what was shown.

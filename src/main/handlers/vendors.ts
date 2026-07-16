@@ -54,6 +54,12 @@ export function registerVendorHandlers(): void {
     updateVendor(vendorId, { status: reviewed === false ? undefined : "reviewed" });
   });
 
+  ipcMain.handle(IPC.setVendorAccountEmail, (_event, vendorId: unknown, email: unknown) => {
+    if (typeof vendorId !== "number") throw new Error("Invalid vendor id");
+    if (!isString(email) || !email.includes("@")) throw new Error("Invalid email");
+    updateVendor(vendorId, { account_email: email });
+  });
+
   ipcMain.handle(IPC.deleteVendor, (_event, vendorId: unknown) => {
     if (typeof vendorId !== "number") throw new Error("Invalid vendor id");
     deleteVendor(vendorId);

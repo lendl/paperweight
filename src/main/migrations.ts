@@ -176,6 +176,16 @@ export function migrateActionLog(d: Database.Database): void {
   d.exec("CREATE INDEX IF NOT EXISTS idx_action_log_case ON action_log(case_id) WHERE case_id IS NOT NULL");
 }
 
+/** Schema migration — account_email on vendors (identity for data requests). */
+export function migrateVendors(d: Database.Database): void {
+  const vendorCols = new Set(
+    (d.pragma("table_info(vendors)") as Array<{ name: string }>).map((c) => c.name),
+  );
+  if (!vendorCols.has("account_email")) {
+    d.exec("ALTER TABLE vendors ADD COLUMN account_email TEXT");
+  }
+}
+
 /**
  * Run all migrations in order. Safe to call on every launch — each migration
  * is a no-op if there is nothing to do.
