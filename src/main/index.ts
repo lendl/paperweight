@@ -131,12 +131,24 @@ app.whenReady().then(async () => {
     autoUpdater.logger = appLog;
     autoUpdater.allowPrerelease = true;
     autoUpdater.autoDownload = true;
+    autoUpdater.on("error", (err) => {
+      appLog.warn("Auto-update error:", err);
+    });
     autoUpdater.on("update-downloaded", (info) => {
       emitUpdateDownloaded(info.version);
     });
-    autoUpdater.checkForUpdates().catch((err) => {
-      appLog.warn("Auto-update check failed:", err);
-    });
+    // checkForUpdates resolves with a downloadPromise when autoDownload is on;
+    // that download is not awaited by checkForUpdates itself, so catch both.
+    autoUpdater
+      .checkForUpdates()
+      .then((result) => {
+        result?.downloadPromise?.catch((err) => {
+          appLog.warn("Auto-update download failed:", err);
+        });
+      })
+      .catch((err) => {
+        appLog.warn("Auto-update check failed:", err);
+      });
   }
 
   // Sync all accounts on launch (delayed to let the window render)

@@ -1,6 +1,6 @@
 {
   "name": "paperweight",
-  "version": "0.4.3",
+  "version": "0.4.4",
   "description": "Manage your digital footprint",
   "license": "MIT",
   "author": "wslyvh",
@@ -58,6 +58,12 @@
       "target": [
         {
           "target": "dmg",
+          "arch": [
+            "universal"
+          ]
+        },
+        {
+          "target": "zip",
           "arch": [
             "universal"
           ]
