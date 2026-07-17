@@ -87,12 +87,13 @@ jobs:
 
       # electron-updater MacUpdater requires a .zip for in-place updates; DMG alone
       # throws "ZIP file not provided" on check/download.
+      # Must use archive: true (default). With archive: false, download-artifact@v8
+      # sees a .zip content-type and tries to decompress the app zip itself → fails.
       - name: Upload macOS update zip
         uses: actions/upload-artifact@v7
         with:
           name: macos-zip
           path: dist/*.zip
-          archive: false
 
       - name: Upload macOS update manifest
         uses: actions/upload-artifact@v7
