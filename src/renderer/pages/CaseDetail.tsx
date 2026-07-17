@@ -556,7 +556,7 @@ export default function CaseDetail(): JSX.Element {
         </div>
         <p className="text-sm text-base-content/50 mt-1">
           <button
-            className="hover:underline hover:text-base-content/80"
+            className="cursor-pointer hover:underline hover:text-base-content/80"
             onClick={() =>
               navigate(`/accounts/${encodeURIComponent(vendorDomain ?? String(caseDetail.vendorId))}`)
             }
