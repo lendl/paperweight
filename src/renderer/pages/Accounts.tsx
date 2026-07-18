@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback, useRef, useMemo } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import type { Vendor, VendorQuery } from "@shared/types";
+import { RISK_CATEGORIES } from "@shared/languages";
 import { useLicense } from "../context/LicenseContext";
 import { BadgeCheck, ChevronRight, ChevronLeft, ArrowUpDown, SlidersHorizontal, Check } from "lucide-react";
 import { getActivitySignal, ACTIVITY_BADGE } from "../utils/signals";
@@ -12,6 +13,9 @@ const RISK_BORDER: Record<string, string> = {
   low: "border-success",
   unknown: "border-base-300",
 };
+
+const CATEGORY_OPTIONS = Object.keys(RISK_CATEGORIES) as Array<keyof typeof RISK_CATEGORIES>;
+const CATEGORY_LABELS = CATEGORY_OPTIONS.map((c) => `${RISK_CATEGORIES[c].icon} ${RISK_CATEGORIES[c].label}`);
 
 const SORT_OPTIONS = [
   { value: "risk", label: "Risk" },
@@ -93,6 +97,7 @@ interface AccountsState {
   activityFilter: string;
   dataTypeFilter: string;
   volumeFilter: string;
+  categoryFilter: string;
   anyBreachFilter: boolean;
   showReviewed: boolean;
 }
@@ -121,6 +126,7 @@ export default function Accounts(): JSX.Element {
   const [activityFilter, setActivityFilter] = useState(restore?.activityFilter ?? (initialPreset ? (initialPreset.activity ?? "") : ""));
   const [dataTypeFilter, setDataTypeFilter] = useState(restore?.dataTypeFilter ?? initialPreset?.dataType ?? "");
   const [volumeFilter, setVolumeFilter] = useState(restore?.volumeFilter ?? initialPreset?.volume ?? "");
+  const [categoryFilter, setCategoryFilter] = useState(restore?.categoryFilter ?? "");
   const [anyBreachFilter, setAnyBreachFilter] = useState(restore?.anyBreachFilter ?? !!(initialPreset?.breached));
   const [showReviewed, setShowReviewed] = useState(restore?.showReviewed ?? false);
   const [showSort, setShowSort] = useState(false);
@@ -147,6 +153,7 @@ export default function Accounts(): JSX.Element {
       setActivityFilter("");
       setDataTypeFilter("");
       setVolumeFilter("");
+      setCategoryFilter("");
       setAnyBreachFilter(false);
       setSortBy("risk");
     } else {
@@ -154,6 +161,7 @@ export default function Accounts(): JSX.Element {
       setActivityFilter(p.activity ?? "");
       setDataTypeFilter(p.dataType ?? "");
       setVolumeFilter(p.volume ?? "");
+      setCategoryFilter("");
       setAnyBreachFilter(!!(p.breached));
       setSortBy(p.defaultSort ?? "message_count");
       setShowReviewed(false);
@@ -169,6 +177,7 @@ export default function Accounts(): JSX.Element {
       setActivityFilter("");
       setDataTypeFilter("");
       setVolumeFilter("");
+      setCategoryFilter("");
       setAnyBreachFilter(false);
       setShowReviewed(true);
     }
@@ -181,6 +190,7 @@ export default function Accounts(): JSX.Element {
     setActivityFilter("");
     setDataTypeFilter("");
     setVolumeFilter("");
+    setCategoryFilter("");
     setAnyBreachFilter(false);
     setShowReviewed(false);
     setSortBy("risk");
@@ -189,7 +199,7 @@ export default function Accounts(): JSX.Element {
 
   const hasAnyFilter = !!(
     search || riskFilter || activityFilter || dataTypeFilter ||
-    volumeFilter || anyBreachFilter || showReviewed || sortBy !== "risk" || page > 1
+    volumeFilter || categoryFilter || anyBreachFilter || showReviewed || sortBy !== "risk" || page > 1
   );
 
   // Keep the current history entry in sync with filter state so the browser back button
@@ -198,10 +208,10 @@ export default function Accounts(): JSX.Element {
   useEffect(() => {
     navigate(pathname, {
       replace: true,
-      state: { restore: { page, sortBy, search, riskFilter, activityFilter, dataTypeFilter, volumeFilter, anyBreachFilter, showReviewed } satisfies AccountsState },
+      state: { restore: { page, sortBy, search, riskFilter, activityFilter, dataTypeFilter, volumeFilter, categoryFilter, anyBreachFilter, showReviewed } satisfies AccountsState },
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, sortBy, search, riskFilter, activityFilter, dataTypeFilter, volumeFilter, anyBreachFilter, showReviewed]);
+  }, [page, sortBy, search, riskFilter, activityFilter, dataTypeFilter, volumeFilter, categoryFilter, anyBreachFilter, showReviewed]);
 
   useEffect(() => {
     function handler(e: MouseEvent) {
@@ -269,10 +279,11 @@ export default function Accounts(): JSX.Element {
       activity: activityFilter || undefined,
       dataType: dataTypeFilter || undefined,
       volume: volumeFilter || undefined,
+      category: categoryFilter || undefined,
       showReviewed,
       onBreachList: anyBreachFilter || undefined,
     };
-  }, [page, sortBy, search, riskFilter, activityFilter, dataTypeFilter, volumeFilter, showReviewed, anyBreachFilter]);
+  }, [page, sortBy, search, riskFilter, activityFilter, dataTypeFilter, volumeFilter, categoryFilter, showReviewed, anyBreachFilter]);
 
   const fetchVendors = useCallback(async (silent = false) => {
     if (!silent) setLoading(true);
@@ -395,6 +406,13 @@ export default function Accounts(): JSX.Element {
                 value={volumeFilter}
                 onChange={v => { setVolumeFilter(v); setShowReviewed(false); setPage(1); }}
               />
+              <FilterGroup
+                label="Category"
+                options={CATEGORY_OPTIONS}
+                labels={CATEGORY_LABELS}
+                value={categoryFilter}
+                onChange={v => { setCategoryFilter(v); setShowReviewed(false); setPage(1); }}
+              />
               <div className="pt-2 border-t border-base-content/10">
                 <div className="text-sm text-base-content/40 mb-1.5">Breach</div>
                 <button
@@ -472,8 +490,8 @@ export default function Accounts(): JSX.Element {
                       const currentIndex = allGroupKeys.indexOf(groupKey);
                       navigate(`/accounts/${encodeURIComponent(groupKey)}`, {
                         state: {
-                          accountsState: { page, sortBy, search, riskFilter, activityFilter, dataTypeFilter, volumeFilter, anyBreachFilter, showReviewed } satisfies AccountsState,
-                          accountNav: { groupKeys: allGroupKeys, currentIndex, vendorQuery: currentQuery, total, restoreState: { page, sortBy, search, riskFilter, activityFilter, dataTypeFilter, volumeFilter, anyBreachFilter, showReviewed } },
+                          accountsState: { page, sortBy, search, riskFilter, activityFilter, dataTypeFilter, volumeFilter, categoryFilter, anyBreachFilter, showReviewed } satisfies AccountsState,
+                          accountNav: { groupKeys: allGroupKeys, currentIndex, vendorQuery: currentQuery, total, restoreState: { page, sortBy, search, riskFilter, activityFilter, dataTypeFilter, volumeFilter, categoryFilter, anyBreachFilter, showReviewed } },
                         },
                       });
                     }}
